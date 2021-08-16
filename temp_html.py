@@ -3,14 +3,14 @@
 #
 # Embedded file name: ./temp_html.py
 
-import os
-import sys  # Import sys module
-import datetime
+# import os
+# import sys  # Import sys module
+# import datetime
 from temp_database import read_records
 
 config_fiels = []
 
-version = '1.6'
+version = '1.7'
 
 
 # -------------------------------------------------------------------------------------------
@@ -121,7 +121,7 @@ def write_html(file_name, dataset, verbose_level, db_fields, web_alert_dict, web
         f.write(
             "   #box-blue { border: 5px solid darkblue; background-color: lightblue; font-size: 27px; font-weight: 900; color: black }" + "\n")
         f.write(
-            "   #box-none { border: 5px solid darkgray; background-color: lightgray; font-size: 27px; font-weight: 900; color: black }" + "\n")  ## !!
+            "   #box-none { border: 5px solid darkgray; background-color: lightgray; font-size: 27px; font-weight: 900; color: black }" + "\n")  # !!
         if colums == 3:
             f.write("   #tag { float: center; margin-top: -0.5em }" + "\n")
             f.write("   #field { float: center; font-size: 32px }" + "\n")
@@ -150,7 +150,7 @@ def write_html(file_name, dataset, verbose_level, db_fields, web_alert_dict, web
                 print("field_list", field_list)
                 print("field_list(type", type(field_list))
             if field_list != None:
-                if type(web_alert_temp) == tuple:  ## (value 0 / value 1)
+                if type(web_alert_temp) == tuple:  # (value 0 / value 1)
                     web_alert_temp_high = web_alert_temp[0]
                     web_alert_temp_low = web_alert_temp[1]
                 else:
@@ -166,27 +166,27 @@ def write_html(file_name, dataset, verbose_level, db_fields, web_alert_dict, web
                     print("value2: ", value2)
                     print("value3: ", value3)
                 if value1 >= 0:
-                    field_ID = "box-red"
+                    field_id = "box-red"
                 else:
                     if value2 >= 0:
-                        field_ID = "box-orange"
+                        field_id = "box-orange"
                     else:
                         if value3 <= 0:
-                            field_ID = "box-blue"
+                            field_id = "box-blue"
                         else:
-                            field_ID = "box"
+                            field_id = "box"
                 field_list = round(field_list, 1)
             else:
-                field_ID = "box-none"
+                field_id = "box-none"
 
             if verbose_level > 1:
                 print("Field-(html):", field)
                 print("Field entry-(html):", field_list)
                 print("WEB-TAG (html):", web_tag)
                 print("WEB-Alert-Temp (html):", web_alert_temp)
-                print("Field-ID (html):", field_ID)
+                print("Field-ID (html):", field_id)
 
-            f.write("   <div id='" + field_ID + "' class='wert'><p><div id='tag'>" + str(
+            f.write("   <div id='" + field_id + "' class='wert'><p><div id='tag'>" + str(
                 web_tag) + "</div>    <div id='field'>" + str(field_list) + "  &deg;C</div></p></div>" + "\n")
 
         f.write("  </div>" + "\n")
