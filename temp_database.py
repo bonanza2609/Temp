@@ -224,7 +224,7 @@ def read_records(db_lines, db_all, db_fields_all, verbose_level, db_fields):
     if verbose_level > 1:
         print("dbval:", dbval)
 
-    if dbval > 0:
+    if dbval != 0:
         if verbose_level > 0:
             print('Datum                             , ' + db_fields_all)
             print(
@@ -268,7 +268,7 @@ def read_records(db_lines, db_all, db_fields_all, verbose_level, db_fields):
 # -------------------------------------------------------------------------------------------
 
 
-def clean_records(db_fields, db_all, db_fields_all, verbose_level):
+def clean_records(db_fields, db_all, db_fields_all, verbose_level):  # TODO function not work correctly
     print(db_all)
 
     db_table = db_all[0]

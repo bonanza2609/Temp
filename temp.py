@@ -295,8 +295,8 @@ def write_config():
         temp_all = [temp_host, temp_port]
         temp_connect(temp_all)
         sensorlist = owproxy.dir()  # get sensor
-        for sensor in sensorlist:
-            w1_slave = sensor._path
+        for w1_slave in sensorlist:
+            # w1_slave = sensor._path
             if verbose_level:
                 print(w1_slave)
             file_config.write("Sensor " + w1_slave + "  0   tbd\n")
@@ -366,8 +366,8 @@ def add_config():
     temp_connect(temp_all)
     sensorlist = owproxy.dir()  # get sensor
     # Repeat following steps with each 1-wire slave
-    for sensor in sensorlist:
-        w1_slave = sensor._path  # Extract 1-wire slave
+    for w1_slave in sensorlist:
+        # w1_slave = sensor._path  # Extract 1-wire slave
         if verbose_level > 0:
             print(w1_slave)
         file_config.write("#Sensor " + w1_slave + "\n")
