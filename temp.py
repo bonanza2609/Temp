@@ -9,7 +9,7 @@
 # import os
 # import sys  # Import sys module
 # import datetime
-import pyownet
+from pyownet import protocol
 import time
 import argparse  # analyze command line arguments
 
@@ -161,18 +161,18 @@ def version_main(v_main):
 
 def temp_connect(temp_all):
     global owproxy
-    temp_Host = temp_all[0]
-    temp_Port = temp_all[1]
+    temp_host = temp_all[0]
+    temp_port = temp_all[1]
 
     try:
-        owproxy = protocol.proxy(temp_Host, temp_Port)
+        owproxy = protocol.proxy(temp_host, temp_port)
 
     except:
-          print('PANIC - cannot connect to database')
+          print("PANIC - cannot connect to database")
           print('Error class:', sys.exc_info()[0])
           print('Error code :', sys.exc_info()[1])
-          print('host       :', temp_Host)
-          print('port       :', temp_Port)
+          print('host       :', temp_host)
+          print('port       :', temp_port)
           sys.exit(2)
 
     return (0)
@@ -303,9 +303,9 @@ def write_config():
         file_config.close
     else:
         print("request cancelled check OW Server address")
-        return (1)
+        return ()
 
-    return (0)
+    return ()
 
 
 # -------------------------------------------------------------------------------------------
@@ -567,11 +567,11 @@ def read_sensor(sensor_slave, sensor_slave_dict_offset):
 
         if sensor_tpye == "DS2438":
             # DS2438 humidity HIH4000
-            VDD = float(owproxy.read(sensor_slave + "VDD"))
-            VAD = float(owproxy.read(sensor_slave + "VAD"))
+            vdd = float(owproxy.read(sensor_slave + "VDD"))
+            vad = float(owproxy.read(sensor_slave + "VAD"))
             temp = float(owproxy.read(sensor_slave + "temperature"))
-            hum_2 = float(owproxy.read(sensor_slave + "humidity"))  ## for testing
-            hum = ((VAD / VDD) - 0.16) / 0.00627 * (1.0546 - 0.00216 * temp)
+            hum_2 = float(owproxy.read(sensor_slave + "humidity"))  # for testing
+            hum = ((vad / vdd) - 0.16) / 0.00627 * (1.0546 - 0.00216 * temp)
 
             dataset = sensor_slave
             sen_off = str(sensor_slave_dict_offset.get(dataset))  # sensor dem offset zuordnen
@@ -642,7 +642,8 @@ def read_sensors(read_level, temp_all, sensor_slaves_dict_offset):
             value = read_value[0]
             sensor_id = read_value[1]
             sensor_type = read_value[2]
-            if value <= dead_lo or value >= dead_hi or value > dead_max or value < error_low or value > error_high:  # check for faulty data
+            # check for faulty data
+            if value <= dead_lo or value >= dead_hi or value > dead_max or value < error_low or value > error_high:
                 if verbose_level > 1:
                     print("Panic", value)
                 time.sleep(0.5)
