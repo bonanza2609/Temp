@@ -4,12 +4,13 @@
 # Read 1-Wire sensors and write into database
 #
 
-from influxdb import InfluxDBClient
-import ow
-#  import os
-#  import sys  # Import sys module
-#  import datetime
-#  import time
+# from influxdb import InfluxDBClient
+# import ow
+# import os
+# import sys  # Import sys module
+# import datetime
+import pyownet
+import time
 import argparse  # analyze command line arguments
 
 from temp_html import *
@@ -158,25 +159,23 @@ def version_main(v_main):
 # -------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------
 
-
 def temp_connect(temp_all):
-    global ow
-    temp_host = temp_all[0]
-    temp_port = temp_all[1]
+    global owproxy
+    temp_Host = temp_all[0]
+    temp_Port = temp_all[1]
 
     try:
-        ow.init(temp_host + ":" + temp_port)
+        owproxy = protocol.proxy(temp_Host, temp_Port)
 
     except:
-        print('PANIC - cannot connect to database')
-        print('Error class:', sys.exc_info()[0])
-        print('Error code :', sys.exc_info()[1])
-        print('host       :', temp_host)
-        print('port       :', temp_port)
-        sys.exit(2)
+          print('PANIC - cannot connect to database')
+          print('Error class:', sys.exc_info()[0])
+          print('Error code :', sys.exc_info()[1])
+          print('host       :', temp_Host)
+          print('port       :', temp_Port)
+          sys.exit(2)
 
-    return ()
-
+    return (0)
 
 # -------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------
@@ -295,7 +294,7 @@ def write_config():
         print("look for connected sensors on OW Server")
         temp_all = [temp_host, temp_port]
         temp_connect(temp_all)
-        sensorlist = ow.Sensor('/').sensorList()
+        sensorlist = owproxy.dir()  # get sensor
         for sensor in sensorlist:
             w1_slave = sensor._path
             if verbose_level:
@@ -365,7 +364,7 @@ def add_config():
     if verbose_level > 0:
         print("Open 1-wire slaves list for reading")
     temp_connect(temp_all)
-    sensorlist = ow.Sensor('/').sensorList()
+    sensorlist = owproxy.dir()  # get sensor
     # Repeat following steps with each 1-wire slave
     for sensor in sensorlist:
         w1_slave = sensor._path  # Extract 1-wire slave
@@ -558,16 +557,23 @@ def read_sensor(sensor_slave, sensor_slave_dict_offset):
 
     try:
 
-        sensor_id = sensor_slave._path  # id of 1-wire sensor
+        sensor_id = sensor_slave  # id of 1-wire sensor
+        sensor_tpye = owproxy.read(sensor_slave + "type")  # type of 1-wire sensor
+        sensor_tpye = sensor_tpye.decode()  # decode bytes of type
 
-        if sensor_slave.family == '26':
+        if verbose_level > 2:
+            print("ID: ", sensor_id)
+            print("Type: ", str(sensor_tpye))
+
+        if sensor_tpye == "DS2438":
             # DS2438 humidity HIH4000
-            vdd = float(sensor_slave.VDD)
-            vad = float(sensor_slave.VAD)
-            temp = float(sensor_slave.temperature)
-            hum = ((vad / vdd) - 0.16) / 0.00627 * (1.0546 - 0.00216 * temp)
+            VDD = float(owproxy.read(sensor_slave + "VDD"))
+            VAD = float(owproxy.read(sensor_slave + "VAD"))
+            temp = float(owproxy.read(sensor_slave + "temperature"))
+            hum_2 = float(owproxy.read(sensor_slave + "humidity"))  ## for testing
+            hum = ((VAD / VDD) - 0.16) / 0.00627 * (1.0546 - 0.00216 * temp)
 
-            dataset = sensor_slave._path
+            dataset = sensor_slave
             sen_off = str(sensor_slave_dict_offset.get(dataset))  # sensor dem offset zuordnen
             if verbose_level > 1:
                 print(dataset, '-> Sensor ID:', dataset, 'Offset:', sen_off)
@@ -580,14 +586,16 @@ def read_sensor(sensor_slave, sensor_slave_dict_offset):
                 print("VDD:      ", vdd)
                 print("VAD:      ", vad)
                 print("temp:     ", temp)
-                print("humidity: ", hum)
+                print("humidity_clac: ", hum)
+                print("humidity_value: ", hum_2)
                 print("offset:   ", sen_off)
                 print("value:    ", value)
 
         else:
-            temp = float(sensor_slave.temperature)
+            # DS18S20  DS18B20
+            temp = float(owproxy.read(sensor_slave + "temperature"))
 
-            dataset = sensor_slave._path
+            dataset = sensor_slave
             sen_off = str(sensor_slave_dict_offset.get(dataset))  # sensor dem offset zuordnen
             if verbose_level > 1:
                 print(dataset, '-> Sensor ID:', dataset, 'Offset:', sen_off)
@@ -607,7 +615,7 @@ def read_sensor(sensor_slave, sensor_slave_dict_offset):
         print("check with > owdir")
         sys.exit(1)
 
-    return (value, sensor_id)  # exit function read_sensor
+    return (value, sensor_id, sensor_tpye)  # exit function read_sensor
 
 
 # -------------------------------------------------------------------------------------------
@@ -615,7 +623,7 @@ def read_sensor(sensor_slave, sensor_slave_dict_offset):
 def read_sensors(read_level, temp_all, sensor_slaves_dict_offset):
     sensor_count = 0
     temp_connect(temp_all)
-    sensor_slaves = ow.Sensor('/').sensorList()
+    sensor_slaves = owproxy.dir()
     # Open 1-wire slaves list for reading
     try:
 
@@ -624,7 +632,7 @@ def read_sensors(read_level, temp_all, sensor_slaves_dict_offset):
         # Print header for results table
         if verbose_level > 0:
             print('Sensor ID       |   Wert')
-            print('-----------------------------')
+            print('------------------------------')
 
         # Repeat following steps with each 1-wire slave
         for sensor in w1_slaves:
@@ -633,8 +641,8 @@ def read_sensors(read_level, temp_all, sensor_slaves_dict_offset):
             read_value = read_sensor(w1_slave, sensor_slaves_dict_offset)  # call read function
             value = read_value[0]
             sensor_id = read_value[1]
-            # check for faulty data
-            if value <= dead_lo or value >= dead_hi or value > dead_max or value < error_low or value > error_high:
+            sensor_type = read_value[2]
+            if value <= dead_lo or value >= dead_hi or value > dead_max or value < error_low or value > error_high:  # check for faulty data
                 if verbose_level > 1:
                     print("Panic", value)
                 time.sleep(0.5)
@@ -651,7 +659,7 @@ def read_sensors(read_level, temp_all, sensor_slaves_dict_offset):
                     print("3rd try", value)
 
             if verbose_level > 0:
-                if sensor.family == '26':
+                if sensor_type == 'DS2438':
                     # DS2438
                     print(str(sensor_id) + ' | {:5.2f} {}'.format(value, '%rH'))  # Print value
                 else:
