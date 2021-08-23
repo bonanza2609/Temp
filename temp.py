@@ -7,11 +7,13 @@
 # from influxdb import InfluxDBClient
 # import ow
 # import os
-# import sys  # Import sys module
+import sys
 # import datetime
 from pyownet import protocol
 import time
 import argparse  # analyze command line arguments
+
+from TempSet import SensorGateway as sensor
 
 from temp_html import *
 from temp_database import *
@@ -169,10 +171,10 @@ def temp_connect(temp_all):
 
     except:
           print("PANIC - cannot connect to database")
-          print('Error class:', sys.exc_info()[0])
-          print('Error code :', sys.exc_info()[1])
-          print('host       :', temp_host)
-          print('port       :', temp_port)
+          print("Error class:", sys.exc_info()[0])
+          print("Error code :", sys.exc_info()[1])
+          print("host       :", temp_host)
+          print("port       :", temp_port)
           sys.exit(2)
 
     return (0)
@@ -233,7 +235,7 @@ def write_config():
             return (1)
 
         print("creating config file now...")
-        now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
+        # now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
         file_config = open(config_file, "w")
         file_config.write("# config file for temp.py\n")
         file_config.write("# created on " + now + "\n")
@@ -258,48 +260,47 @@ def write_config():
         file_config.write("Temp-Port " + temp_port + "\n")
         file_config.write("# Database Field Key's")
         file_config.write("# -----------------------------------------------------------\n")
-        file_config.write("dbfield tbd\n")
-        file_config.write("dbfield tbd\n")
-        file_config.write("dbfield tbd\n")
-        file_config.write("dbfield tbd\n")
-        file_config.write("dbfield tbd\n")
-        file_config.write("dbfield tbd\n")
-        file_config.write("dbfield tbd\n")
-        file_config.write("dbfield tbd\n")
+        file_config.write("dbfield tbd-1\n")
+        file_config.write("dbfield tbd-2\n")
+        file_config.write("dbfield tbd-3\n")
+        file_config.write("dbfield tbd-4\n")
+        file_config.write("dbfield tbd-5\n")
+        file_config.write("dbfield tbd-6\n")
+        file_config.write("dbfield tbd-7\n")
+        file_config.write("dbfield tbd-8\n")
         file_config.write("# WEB Field Key's Syntax: \n")
         file_config.write("# web_field [dbfield] [Field Key]\n")
         file_config.write("# -----------------------------------------------------------\n")
-        file_config.write("web_field tbd tbd\n")
-        file_config.write("web_field tbd tbd\n")
-        file_config.write("web_field tbd tbd\n")
-        file_config.write("web_field tbd tbd\n")
-        file_config.write("web_field tbd tbd\n")
-        file_config.write("web_field tbd tbd\n")
-        file_config.write("web_field tbd tbd\n")
+        file_config.write("web_field tbd-1 tad-1\n")
+        file_config.write("web_field tbd-2 tad-2\n")
+        file_config.write("web_field tbd-3 tad-3\n")
+        file_config.write("web_field tbd-4 tad-4\n")
+        file_config.write("web_field tbd-5 tad-5\n")
+        file_config.write("web_field tbd-6 tad-6\n")
+        file_config.write("web_field tbd-7 tad-7\n")
+        file_config.write("web_field tbd-8 tad-8\n")
         file_config.write("# WEB Alert Temp \n")
         file_config.write("# max temp per Sensor Syntax: \n")
         file_config.write("# web_alert [dbfield] [Temp-high] (Optional:[Temp-low])\n")
         file_config.write("# -----------------------------------------------------------\n")
-        file_config.write(" web_alert tbd 0\n")
-        file_config.write(" web_alert tbd 0\n")
-        file_config.write(" web_alert tbd 0\n")
-        file_config.write(" web_alert tbd 0\n")
-        file_config.write(" web_alert tbd 0\n")
-        file_config.write(" web_alert tbd 0\n")
-        file_config.write(" web_alert tbd 0\n")
-        file_config.write(" web_alert tbd 0\n")
+        file_config.write(" web_alert tbd-1 0\n")
+        file_config.write(" web_alert tbd-2 0\n")
+        file_config.write(" web_alert tbd-3 0\n")
+        file_config.write(" web_alert tbd-4 0\n")
+        file_config.write(" web_alert tbd-5 0\n")
+        file_config.write(" web_alert tbd-6 0\n")
+        file_config.write(" web_alert tbd-7 0\n")
+        file_config.write(" web_alert tbd-8 0\n")
         file_config.write("# Syntax: \n")
         file_config.write("# Sensor [Sensor ID] [Temp Offset] [Sensor Field in Database]\n")
         file_config.write("# -----------------------------------------------------------\n")
         print("look for connected sensors on OW Server")
         temp_all = [temp_host, temp_port]
-        temp_connect(temp_all)
-        sensorlist = owproxy.dir()  # get sensor
-        for w1_slave in sensorlist:
-            # w1_slave = sensor._path
+        sensor.get_sensor_list(temp_all)
+        for w1_slave in sensor.sensor_list:
             if verbose_level:
                 print(w1_slave)
-            file_config.write("Sensor " + w1_slave + "  0   tbd\n")
+            file_config.write("Sensor " + w1_slave + "  0   tbd-\n")
         file_config.close
     else:
         print("request cancelled check OW Server address")
@@ -321,7 +322,7 @@ def add_config():
     global temp_r_port
     global temp_all_remote
 
-    now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
+    # now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
 
     try:
 
@@ -363,11 +364,9 @@ def add_config():
 
     if verbose_level > 0:
         print("Open 1-wire slaves list for reading")
-    temp_connect(temp_all)
-    sensorlist = owproxy.dir()  # get sensor
-    # Repeat following steps with each 1-wire slave
-    for w1_slave in sensorlist:
-        # w1_slave = sensor._path  # Extract 1-wire slave
+
+    sensor.get_sensor_list(temp_all)
+    for w1_slave in sensor.sensor_list:
         if verbose_level > 0:
             print(w1_slave)
         file_config.write("#Sensor " + w1_slave + "\n")
@@ -415,7 +414,7 @@ def read_config(init_level, config_file):
 
     if verbose_level > 1:
         print("reading config file ", config_file)
-    now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
+    # now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
     if verbose_level > 1:
         print("-------------------------------------", now)
 
@@ -685,7 +684,7 @@ def read_sensors(read_level, temp_all, sensor_slaves_dict_offset):
 
 # -------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------
-
+global now
 now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
 
 if args.version:

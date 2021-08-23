@@ -291,7 +291,7 @@ def clean_records(db_fields, db_all, db_fields_all, verbose_level):  # TODO func
     time_range = 3
 
     print("Please enter the time of the data point in the 'YYYY-MM-DD hh:mm:ss.nnnnnnnn' format you want to delete")
-    date_time_str = input('Enter Time: ')
+    date_time_str = "2021-08-18 13:45:46.613377"  # input('Enter Time: ') # todo remove
 
     local = pytz.timezone(local_timezone)
     naive = datetime.datetime.strptime(date_time_str, date_format)
@@ -429,7 +429,7 @@ def clean_records(db_fields, db_all, db_fields_all, verbose_level):  # TODO func
         return (int(output_7))
 
     def output_data(dbval):
-        if dbval > 0:
+        if dbval != 0:
             if verbose_level > 0:
                 print('Datum UTC                         , ' + db_fields_all)
                 print('----------------------------------------------------------------------------------------------------')
@@ -520,18 +520,19 @@ def clean_records(db_fields, db_all, db_fields_all, verbose_level):  # TODO func
 
     output_time_1 = time_stamps[pos]
     timestamp_str_3 = str(time_to_stamp_2(output_time_1, date_time_zero_str, date_format, verbose_level))
+    # todo timestamp_str_3 result wrong timestamp
 
     if verbose_level > 1:
         print("timestamp_str_3", timestamp_str_3)
 
-    stmt_2 = 'SELECT * FROM ' + db_table + ' WHERE time = ' + timestamp_str_3 + '  '
+    stmt_2 = 'SELECT * FROM ' + db_table + ' WHERE time = ' + timestamp_str_3 + '  '  # todo data string incorrect
 
     dbval_2 = db_interaction(stmt_2)
 
     if verbose_level > 1:
         print("dbval_2:", dbval_2)
 
-    time_stamps_2 = output_data(dbval_2)
+    time_stamps_2 = output_data(dbval_2)  # todo database result empty wye ?
     timestamp_str_4 = str(time_to_stamp_2(time_stamps_2[0], date_time_zero_str, date_format, verbose_level))
 
     if verbose_level > 1:
