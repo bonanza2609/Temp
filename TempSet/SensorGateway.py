@@ -5,11 +5,12 @@ import sys
 class SensorGateway:
 
     sensor_list = None
+    ow_proxy = None
 
     def __init__(self):
         pass
 
-    def _temp_connect(self, temp_all):
+    def temp_connect(self, temp_all):
 
         temp_host = temp_all[0]
         temp_port = temp_all[1]
@@ -29,7 +30,6 @@ class SensorGateway:
 
     def get_sensor_list(self, temp_all):
 
-        self._temp_connect(temp_all)
+        self.temp_connect(temp_all)
 
         self.sensor_list = self.ow_proxy.dir()
-

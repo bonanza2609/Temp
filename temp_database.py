@@ -22,12 +22,12 @@ version = '1.3'
 
 def db_connect(db_all, nodb, verbose_level):
     global db
-    db_table = db_all[0]
-    db_database = db_all[1]
-    db_host = db_all[2]
-    db_user = db_all[3]
-    db_password = db_all[4]
-    db_port = db_all[5]
+    db_host = db_all[0]
+    db_port = db_all[1]
+    db_user = db_all[2]
+    db_password = db_all[3]
+    db_table = db_all[4]
+    db_database = db_all[5]
 
     try:
         if (nodb):
@@ -104,12 +104,12 @@ def create_database(db_all, db_fields_all, verbose_level):
 def write_database(read_items, sensordata, sensor_dict, db_all, verbose_level):
     json_body = []
 
-    db_table = db_all[0]
-    db_database = db_all[1]
-    db_host = db_all[2]
-    db_user = db_all[3]
-    db_password = db_all[4]
-    db_port = db_all[5]
+    db_host = db_all[0]
+    db_port = db_all[1]
+    db_user = db_all[2]
+    db_password = db_all[3]
+    db_table = db_all[4]
+    db_database = db_all[5]
     db_connect(db_all, 0, verbose_level)
 
     try:
@@ -168,12 +168,12 @@ def write_database(read_items, sensordata, sensor_dict, db_all, verbose_level):
 
 
 def read_records(db_lines, db_all, db_fields_all, verbose_level, db_fields):
-    db_table = db_all[0]
-    db_database = db_all[1]
-    db_host = db_all[2]
-    db_user = db_all[3]
-    db_password = db_all[4]
-    db_port = db_all[5]
+    db_host = db_all[0]
+    db_port = db_all[1]
+    db_user = db_all[2]
+    db_password = db_all[3]
+    db_table = db_all[4]
+    db_database = db_all[5]
     db_connect(db_all, 0, verbose_level)
     dbval = 0
 
@@ -271,12 +271,12 @@ def read_records(db_lines, db_all, db_fields_all, verbose_level, db_fields):
 def clean_records(db_fields, db_all, db_fields_all, verbose_level):  # TODO function not work correctly
     print(db_all)
 
-    db_table = db_all[0]
-    db_database = db_all[1]
-    db_host = db_all[2]
-    db_user = db_all[3]
-    db_password = db_all[4]
-    db_port = db_all[5]
+    db_host = db_all[0]
+    db_port = db_all[1]
+    db_user = db_all[2]
+    db_password = db_all[3]
+    db_table = db_all[4]
+    db_database = db_all[5]
     db_connect(db_all, 0, verbose_level)
     dbval = 0
     dbval_2 = 0
@@ -558,8 +558,8 @@ def clean_records(db_fields, db_all, db_fields_all, verbose_level):  # TODO func
 
 
 def kill_dbentries(db_all, verbose_level):
-    db_table = db_all[0]
-    db_database = db_all[1]
+    db_table = db_all[4]
+    db_database = db_all[5]
     print('DELETE ALL ENTRIES FROM DATABASE', db_table, 'from', db_database, )
     var = input('Enter yes: ')
     if var == 'yes':
@@ -581,7 +581,8 @@ def kill_dbentries(db_all, verbose_level):
 
 
 def version_db():
-    version_db = version
-    return (version_db)
+    v_db = str("version_db:" + str(version))
+    return (v_db)
+
 
 # -------------------------------------------------------------------------------------------
