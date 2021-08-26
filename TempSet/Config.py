@@ -3,21 +3,19 @@ import time
 
 class Config:
 
-    input_ok = True
-    db_all = []
-    db_all_remote = []
-    temp_all = []
-    temp_all_remote = []
-    db_fields = []
-    db_fields_all = ""
-    web_field_dict = {}
-    web_alert_dict = {}
-    sensor_dict = {}
-    sensor_dict_offset = {}
-    html_single_file = ""
-
     def __init__(self):
-        pass
+        self.input_ok = True
+        self.db_all = []
+        self.db_all_remote = []
+        self.temp_all = []
+        self.temp_all_remote = []
+        self.db_fields = []
+        self.db_fields_all = ""
+        self.web_field_dict = {}
+        self.web_alert_dict = {}
+        self.sensor_dict = {}
+        self.sensor_dict_offset = {}
+        self.html_single_file = ""
 
     def input_config(self, config_file, db_all, temp_all):
 

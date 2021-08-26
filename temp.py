@@ -4,12 +4,10 @@
 # Read 1-Wire sensors and write into database
 #
 
-# from influxdb import InfluxDBClient
 # import ow
 # import os
 # import sys
 # import datetime
-# from pyownet import protocol
 import time
 import argparse  # analyze command line arguments
 
@@ -22,17 +20,8 @@ config_file = 'temp-config.txt'
 html_single_file = 'www/temp-single.html'
 html_multi_file = 'www/temp-multi.html'
 
-db_fields = []              # list of database fields
-db_dict = {}                # dictionary
-web_field_dict = {}         # dictionary
-web_alert_dict = {}         # dictionary
-sensor_list = []            # list of sensors
-sensor_locations = []       # list of locations
-sensor_dict = {}            # dictionary -> sensor : location
-sensor_offset = []          # sensor offset
-sensor_dict_offset = {}     # dictionary -> sensor : offset
-
 # define range for faulty sensor data
+
 dead_hi = 80.0
 dead_lo = -30.0
 error_low = -100
@@ -42,31 +31,27 @@ db_host = "localhost"               # host - local database
 db_port = "8086"                    # port
 db_user = "influxdb-user"           # username
 db_password = "influxdb_password"   # password
-db_table = "tempdat"                # Table
-db_database = "temp"                # datenbank
+db_table = "temp-dat"               # Table
+db_database = "temp"                # database
 db_r_host = "127.0.0.1"             # host - Remote Database / optional
 db_r_port = "8086"                  # port
 db_r_user = "influxdb-user"         # username
 db_r_password = "influx_password"   # password
-db_r_table = "Tempdat"              # Table
-db_r_database = "Temp"              # datenbank
-db_fields_all = ""
-db = ""
+db_r_table = "Temp-dat"             # Table
+db_r_database = "Temp"              # database
+
+db_all = [db_host, db_port, db_user, db_password, db_table, db_database]
+db_all_remote = [db_r_host, db_r_port, db_r_user, db_r_password, db_r_table, db_r_database]
 
 temp_host = "localhost"             # host - local temp server
 temp_port = "4304"                  # port
 temp_r_host = "127.0.0.1"           # host - Remote temp server
 temp_r_port = "4304"                # port
 
-db_all = [db_host, db_port, db_user, db_password, db_table, db_database]
-db_all_remote = [db_r_host, db_r_port, db_r_user, db_r_password, db_r_table, db_r_database]
-
 temp_all = [temp_host, temp_port]
-temp_all_local = [temp_host, temp_port]
 temp_all_remote = [temp_r_host, temp_r_port]
 
 sensordata = []
-data_temp = []
 remote_set = 0
 
 verbose_level = 1  # default: show status messages
@@ -105,7 +90,7 @@ parser.add_argument("-w", "--html_single", action='store_const', dest='html_sing
                     const='value-to-store', help="create web page(html)with last entry")
 
 parser.add_argument("-wm", "--html_multi", dest='html_multi', type=str,
-                    help="create web page(html)with last entry from multiple configfiles")
+                    help="create web page(html)with last entry from multiple configuration files")
 
 parser.add_argument("-k", "--kill", action='store_const', dest='kill',
                     const='value-to-store', help="kill all entries in database", )
@@ -123,12 +108,12 @@ parser.add_argument("-c", "--createdb", action='store_const', dest='create',
                     const='value-to-store', help="create database", )
 
 parser.add_argument("-x", "--xxx", action='store_const', dest='xxx',
-                    const='value-to-store', help="clean DB entrie select by Time", )
+                    const='value-to-store', help="clean DB entry select by Time", )
 
 parser.add_argument('--version', action='store_const', dest='version',
                     const='value-to-store', help="Version over view")
 
-parser.add_argument('--conf', dest='conf', help="set config flie", type=str)
+parser.add_argument('--conf', dest='conf', help="set config file", type=str)
 
 args = parser.parse_args()
 
@@ -160,6 +145,8 @@ def version_main(v_main):
 # -------------------------------------------------------------------------------------------
 
 def read_sensors(read_level, temp_all, sensor_slaves_dict_offset):
+    now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
+
     sensor_count = 0
     sensor = TempSet.SensorGateway()
     sensor.get_sensor_list(temp_all)
@@ -177,14 +164,14 @@ def read_sensors(read_level, temp_all, sensor_slaves_dict_offset):
         for w1_slave in w1_slaves:
             time.sleep(0.2)
             read = TempSet.ReadSensor()
-            read.sensor_read(w1_slave, sensor_slaves_dict_offset, temp_all, verbose_level)
+            read.read_sensor(w1_slave, sensor_slaves_dict_offset, temp_all, verbose_level)
             value = read.value
             # check for faulty data
-            if float(value) <= dead_lo or value >= dead_hi:
+            if value <= dead_lo or value >= dead_hi:
                 if verbose_level > 1:
                     print("Panic", value)
                 time.sleep(0.5)
-                read.sensor_read(w1_slave, sensor_slaves_dict_offset, temp_all, verbose_level)
+                read.read_sensor(w1_slave, sensor_slaves_dict_offset, temp_all, verbose_level)
                 if verbose_level > 1:
                     print("2nd try", value)
 
@@ -192,7 +179,7 @@ def read_sensors(read_level, temp_all, sensor_slaves_dict_offset):
                 if verbose_level > 0:
                     print("Panic", value)
                 time.sleep(1.5)
-                read.sensor_read(w1_slave, sensor_slaves_dict_offset, temp_all, verbose_level)
+                read.read_sensor(w1_slave, sensor_slaves_dict_offset, temp_all, verbose_level)
                 if verbose_level > 0:
                     print("3rd try", value)
 
@@ -222,7 +209,7 @@ def read_sensors(read_level, temp_all, sensor_slaves_dict_offset):
 
 # -------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------
-global now
+
 now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
 
 if args.version:
@@ -254,16 +241,6 @@ if args.setup:
 
 conf = TempSet.Config()
 conf.read_config(0, config_file, verbose_level)
-
-# return_val = read_config(0, config_file)  # db_all,db_fields_all,verbose_level)
-# if verbose_level > 3:
-#     print("return_val:: ", return_val)
-#
-# if return_val == {}:
-#     print("Error: cannot find config file " + config_file)
-#     print("Please run >temp.py --setup")
-#     sys.exit(0)
-
 
 if args.remote:
     db_all = db_all_remote

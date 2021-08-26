@@ -4,11 +4,9 @@ import sys
 
 class SensorGateway:
 
-    sensor_list = None
-    ow_proxy = None
-
     def __init__(self):
-        pass
+        self.sensor_list = None
+        self.ow_proxy = None
 
     def temp_connect(self, temp_all):
 
@@ -18,7 +16,7 @@ class SensorGateway:
         try:
             self.ow_proxy = protocol.proxy(temp_host, temp_port)
 
-        except:
+        except IOError:
             print("PANIC - cannot connect to sensor's")
             print('Error class:', sys.exc_info()[0])
             print('Error code :', sys.exc_info()[1])
