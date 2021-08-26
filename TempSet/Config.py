@@ -3,6 +3,7 @@ import time
 
 class Config:
 
+    input_ok = True
     db_all = []
     db_all_remote = []
     temp_all = []
@@ -81,7 +82,7 @@ class Config:
             var = input("Enter ok: ")
             if var != "ok":
                 print("no file created")
-                return ()  # todo test function her "return (1)" 
+                self.input_ok = False
 
     def write_config(self, config_file, w1_slaves, verbose_level):
 
@@ -305,22 +306,17 @@ class Config:
             if verbose_level > 2:
                 print("all db fields: ", db_fields_all)
 
-            db_all = [db_host, db_port, db_user, db_password, db_table, db_database]
-            db_all_remote = [db_r_host, db_r_port, db_r_user, db_r_password, db_r_table, db_r_database]
+            self.db_all = [db_host, db_port, db_user, db_password, db_table, db_database]
+            self.db_all_remote = [db_r_host, db_r_port, db_r_user, db_r_password, db_r_table, db_r_database]
 
-            temp_all = [temp_host, temp_port]
-            temp_all_remote = [temp_r_host, temp_r_port]
+            self.temp_all = [temp_host, temp_port]
+            self.temp_all_remote = [temp_r_host, temp_r_port]
 
-            self.db_all = db_all
-            self.db_all_remote = db_all_remote
             self.db_fields = db_fields
             self.db_fields_all = db_fields_all
 
             self.web_alert_dict = web_alert_dict
             self.web_field_dict = web_field_dict
-
-            self.temp_all = temp_all
-            self.temp_all_remote = temp_all_remote
 
             self.sensor_dict = sensor_dict
             self.sensor_dict_offset = sensor_dict_offset
@@ -328,8 +324,10 @@ class Config:
             self.html_single_file = html_single_file
 
             if verbose_level > 1:
-                print("Database (local) : ", db_all)
-                print("Database (remote): ", db_all_remote)
+                print("Database  (local) : ", self.db_all)
+                print("Database  (remote): ", self.db_all_remote)
+                print("OW-Server (local) : ", self.temp_all)
+                print("OW-Server (remote): ", self.temp_all_remote)
 
             if verbose_level > 2:
                 print("all sensor list: ", sensor_list)

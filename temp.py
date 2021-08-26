@@ -59,7 +59,6 @@ temp_r_host = "127.0.0.1"           # host - Remote temp server
 temp_r_port = "4304"                # port
 
 db_all = [db_host, db_port, db_user, db_password, db_table, db_database]
-db_all_local = [db_host, db_port, db_user, db_password, db_table, db_database]
 db_all_remote = [db_r_host, db_r_port, db_r_user, db_r_password, db_r_table, db_r_database]
 
 temp_all = [temp_host, temp_port]
@@ -160,378 +159,6 @@ def version_main(v_main):
 # -------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------
 
-
-def write_config():
-    global db_Host
-    global db_Database
-    global db_User
-    global db_Password
-    global db_Table
-    global db_fields_all
-    global db_Port
-    global db_all
-
-    global temp_host
-    global temp_port
-    global temp_all
-
-    print("Write new config file", config_file)
-    var = input("Enter yes: ")
-    if var == "yes":
-
-        var = input("Influxdb-Serverhost address  (default [" + db_Host + "]):")
-        if len(var) != 0:
-            db_Host = var
-        var = input("Influxdb-Serverhost port     (default [" + db_Port + "]):")
-        if len(var) != 0:
-            db_Port = var
-        var = input("Influxdb-Server user name    (default [" + db_User + "]):")
-        if len(var) != 0:
-            db_User = var
-        var = input("Influxdb-Server password     (default [" + db_Password + "]):")
-        if len(var) != 0:
-            db_Password = var
-        var = input("Influxdb-Server database     (default [" + db_Database + "]):")
-        if len(var) != 0:
-            db_Database = var
-        var = input("Influxdb-Server table        (default [" + db_Table + "]):")
-        if len(var) != 0:
-            db_Table = var
-        var = input("OW-Serverhost addresse       (default [" + temp_host + "]):")
-        if len(var) != 0:
-            temp_host = var
-        var = input("OW-Serverhost port           (default [" + temp_port + "]):")
-        if len(var) != 0:
-            temp_port = var
-
-        print(
-            "check: " + db_Host + " " + db_Port + " " + db_User + " " + db_Password + " " + db_Database + " " + db_Table
-            + " " + temp_host + " " + temp_port)
-        var = input("Enter ok: ")
-        if var != "ok":
-            print("no file created")
-            return (1)
-
-        print("creating config file now...")
-        # now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
-        with open(config_file, "w") as file_config:
-            # file_config = open(config_file, "w")
-            file_config.write("# config file for temp.py\n")
-            file_config.write("# created on " + now + "\n")
-            file_config.write("# -----------------------------------------------------------\n")
-            file_config.write("# Web config file path/name \n")
-            file_config.write("html_file www/temp-single.html\n")
-            file_config.write("# -----------------------------------------------------------\n")
-            file_config.write("# Influxdb Server\n")
-            file_config.write("# Syntax:\n")
-            file_config.write("# Tag ID [normal] (Optional:[backup])\n")
-            file_config.write("Host " + db_Host + "\n")
-            file_config.write("Port " + db_Port + "\n")
-            file_config.write("User " + db_User + "\n")
-            file_config.write("Password " + db_Password + "\n")
-            file_config.write("Database " + db_Database + "\n")
-            file_config.write("Table " + db_Table + "\n")
-            file_config.write("# -----------------------------------------------------------\n")
-            file_config.write("# OW Server\n")
-            file_config.write("# Syntax:\n")
-            file_config.write("# Tag ID [normal] (Optional:[backup])\n")
-            file_config.write("Temp-Host " + temp_host + "\n")
-            file_config.write("Temp-Port " + temp_port + "\n")
-            file_config.write("# Database Field Key's")
-            file_config.write("# -----------------------------------------------------------\n")
-            file_config.write("dbfield tbd-1\n")
-            file_config.write("dbfield tbd-2\n")
-            file_config.write("dbfield tbd-3\n")
-            file_config.write("dbfield tbd-4\n")
-            file_config.write("dbfield tbd-5\n")
-            file_config.write("dbfield tbd-6\n")
-            file_config.write("dbfield tbd-7\n")
-            file_config.write("dbfield tbd-8\n")
-            file_config.write("# WEB Field Key's Syntax: \n")
-            file_config.write("# web_field [dbfield] [Field Key]\n")
-            file_config.write("# -----------------------------------------------------------\n")
-            file_config.write("web_field tbd-1 tad-1\n")
-            file_config.write("web_field tbd-2 tad-2\n")
-            file_config.write("web_field tbd-3 tad-3\n")
-            file_config.write("web_field tbd-4 tad-4\n")
-            file_config.write("web_field tbd-5 tad-5\n")
-            file_config.write("web_field tbd-6 tad-6\n")
-            file_config.write("web_field tbd-7 tad-7\n")
-            file_config.write("web_field tbd-8 tad-8\n")
-            file_config.write("# WEB Alert Temp \n")
-            file_config.write("# max temp per Sensor Syntax: \n")
-            file_config.write("# web_alert [dbfield] [Temp-high] (Optional:[Temp-low])\n")
-            file_config.write("# -----------------------------------------------------------\n")
-            file_config.write(" web_alert tbd-1 0\n")
-            file_config.write(" web_alert tbd-2 0\n")
-            file_config.write(" web_alert tbd-3 0\n")
-            file_config.write(" web_alert tbd-4 0\n")
-            file_config.write(" web_alert tbd-5 0\n")
-            file_config.write(" web_alert tbd-6 0\n")
-            file_config.write(" web_alert tbd-7 0\n")
-            file_config.write(" web_alert tbd-8 0\n")
-            file_config.write("# Syntax: \n")
-            file_config.write("# Sensor [Sensor ID] [Temp Offset] [Sensor Field in Database]\n")
-            file_config.write("# -----------------------------------------------------------\n")
-            print("look for connected sensors on OW Server")
-            temp_all = [temp_host, temp_port]
-            sensor = TempSet.SensorGateway()
-            sensor.get_sensor_list(temp_all)
-            for w1_slave in sensor.sensor_list:
-                if verbose_level:
-                    print(w1_slave)
-                file_config.write("Sensor " + w1_slave + "  0   tbd-\n")
-
-    else:
-        print("request cancelled check OW Server address")
-        return ()
-
-    return ()
-
-
-# -------------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------------------------
-
-
-def add_config():
-    global temp_host
-    global temp_port
-    global temp_all
-
-    global temp_r_host
-    global temp_r_port
-    global temp_all_remote
-
-    # now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
-
-    try:
-
-        with open(config_file, "r") as file:
-            # file = open(config_file, "r")
-            settings = []  # Erstellt ein Variablenarray, das die Einstellungen speichert
-            for line in file:  #
-                if line[0] != "#":  # i.e. ignore comment lines
-                    settings.append(line)
-
-        for x in range(0, len(settings)):
-            line = settings[x]
-            if verbose_level > 3:
-                print(x, ": ", line)
-            item1 = line.split()
-            if len(item1) > 1:  # need 4 items for sensor: tag, value1, value2, value3
-                if verbose_level > 2:
-                    print(item1[0], item1[1], len(item1))
-                if item1[0] == "Temp-Host":
-                    temp_host = item1[1]
-                    if len(item1) > 2:
-                        temp_r_host = item1[2]
-                if item1[0] == "Temp-Port":
-                    temp_port = item1[1]
-                    if len(item1) > 2:
-                        temp_r_port = item1[2]
-
-        temp_all = [temp_host, temp_port]
-        temp_all_remote = [temp_r_host, temp_r_port]
-
-    except IOError:
-        print("----------------------", now)
-        print("Cannot find file: " + config_file)
-
-    file_config = open(config_file, "a")
-    file_config.write("\n# ----------------------------------------\n")
-    file_config.write("# sensors added on " + now + "\n")
-    file_config.write("# ----------------------------------------\n")
-
-    if verbose_level > 0:
-        print("Open 1-wire slaves list for reading")
-
-    sensor = TempSet.SensorGateway()
-    sensor.get_sensor_list(temp_all)
-    for w1_slave in sensor.sensor_list:
-        if verbose_level > 0:
-            print(w1_slave)
-        file_config.write("#Sensor " + w1_slave + "\n")
-
-    file_config.close()
-
-    sys.exit(0)
-
-
-# -------------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------------------------
-
-
-def read_config(init_level, config_file):
-    global html_single_file
-
-    global db_Host
-    global db_Database
-    global db_User
-    global db_Password
-    global db_Table
-    global db_Port
-    global db_all
-
-    global db_RHost
-    global db_RDatabase
-    global db_RUser
-    global db_RPassword
-    global db_RTable
-    global db_RPort
-    global db_all_remote
-
-    global db_fields_all
-
-    global temp_host
-    global temp_port
-    global temp_all
-
-    global temp_r_host
-    global temp_r_port
-    global temp_all_remote
-
-    config_dict = {}
-
-    error_level = 0
-
-    if verbose_level > 1:
-        print("reading config file ", config_file)
-    # now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
-    if verbose_level > 1:
-        print("-------------------------------------", now)
-
-    try:
-
-        with open(config_file, "r") as file:
-            settings = []  # Erstellt ein Variablenarray, das die Einstellungen speichert
-            for line in file:  #
-                if line[0] != "#":  # i.e. ignore comment lines
-                    settings.append(line)
-
-        for x in range(0, len(settings)):
-            line = settings[x]
-            if verbose_level > 3:
-                print(x, ": ", line)
-            item1 = line.split()
-            if len(item1) > 1:  # need 4 items for sensor: tag, value1, value2, value3
-                if verbose_level > 2:
-                    print(item1[0], item1[1], len(item1))
-                if item1[0] == "html_file":
-                    html_single_file = item1[1]
-                if item1[0] == "Host":
-                    db_Host = item1[1]
-                    if len(item1) > 2:
-                        db_RHost = item1[2]  # remote database
-                if item1[0] == "Port":
-                    db_Port = item1[1]
-                    if len(item1) > 2:
-                        db_RPort = item1[2]
-                if item1[0] == "Database":
-                    db_Database = item1[1]
-                    if len(item1) > 2:
-                        db_RDatabase = item1[2]
-                if item1[0] == "Table":
-                    db_Table = item1[1]
-                    if len(item1) > 2:
-                        db_RTable = item1[2]
-                if item1[0] == "User":
-                    db_User = item1[1]
-                    if len(item1) > 2:
-                        db_RUser = item1[2]
-                if item1[0] == "Password":
-                    db_Password = item1[1]
-                    if len(item1) > 2:
-                        db_RPassword = item1[2]
-                if item1[0] == "Temp-Host":
-                    temp_host = item1[1]
-                    if len(item1) > 2:
-                        temp_r_host = item1[2]
-                if item1[0] == "Temp-Port":
-                    temp_port = item1[1]
-                    if len(item1) > 2:
-                        temp_r_port = item1[2]
-                if item1[0] == "dbfield":
-                    db_fields.append(item1[1])
-                if len(item1) > 2:
-                    if item1[0] == "web_field":
-                        web_field_dict[item1[1]] = item1[2]
-                    if item1[0] == "web_alert":
-                        if len(item1) > 3:
-                            web_alert_dict[item1[1]] = item1[2], item1[3]
-                        else:
-                            web_alert_dict[item1[1]] = item1[2]
-                if len(item1) > 3:
-                    if item1[0] == "Sensor":
-                        if verbose_level > 2:
-                            print("Sensor", item1[1], "Offset:", item1[2], "Field:", item1[3])
-                        sensor_list.append(item1[1])
-                        sensor_locations.append(item1[3])
-                        sensor_dict[item1[1]] = item1[3]
-                        sensor_offset.append(item1[2])
-                        sensor_dict_offset[item1[1]] = item1[2]
-
-        for x in range(0, len(db_fields)):
-            if verbose_level > 2:
-                print("db_fields: ", db_fields[x])
-            if x == 0:
-                db_fields_all = str(db_fields[x])
-            else:
-                db_fields_all = db_fields_all + ", " + str(db_fields[x])
-            db_dict[db_fields[x]] = x
-        if verbose_level > 2:
-            print("all db fields: ", db_fields_all)
-
-        db_all = [db_host, db_port, db_user, db_password, db_table, db_database]
-        db_all_remote = [db_r_host, db_r_port, db_r_user, db_r_password, db_r_table, db_r_database]
-
-        temp_all = [temp_host, temp_port]
-        temp_all_remote = [temp_r_host, temp_r_port]
-
-        if verbose_level > 1:
-            print("Database (local) : ", db_all)
-            print("Database (remote): ", db_all_remote)
-
-        if verbose_level > 2:
-            print("all sensor list: ", sensor_list)
-        if init_level == 0:  # during initital setup do not display panic messages
-            for x in range(0, len(sensor_list)):
-                x_str = sensor_locations[x]
-                if str(db_dict.get(x_str)) == "None":
-                    print("PANIC: Sensor", sensor_list[x], "is using unknown location", x_str)
-                    if x == 0:
-                        print("please assign one out of dbfield")
-                        print(db_fields)
-
-        # config dict for muli web output
-        config_dict = {'db_all': db_all, 'db_all_remote': db_all_remote, 'db_fields': db_fields,
-                       'db_fields_all': db_fields_all, 'web_field_dict': web_field_dict,
-                       'web_alert_dict': web_alert_dict}
-
-        if verbose_level > 1:
-            print("html_single_file: ", html_single_file)
-            print("sensor_dict:", sensor_dict)
-            print("sensor_dict_offset:", sensor_dict_offset)
-            print("db_fields:", db_fields)
-            print("db_dict:", db_dict)
-            print("web_field_dict", web_field_dict)
-            print("web_alert_dict", web_alert_dict)
-            print("config_dict: ", config_dict)
-
-        if error_level > 0:
-            print("please edit config file " + config_file + " and assign one out of dbfield")
-            print("e.g. Sensor " + sensor_list[x] + " " + db_fields[0])
-            print("available fields: " + str(db_fields))
-            sys.exit(0)
-
-    except IOError:
-        print("----------------------", now)
-        print("Cannot find file: " + config_file)
-    return (config_dict)
-
-
-# -------------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------------------------
-
 def read_sensors(read_level, temp_all, sensor_slaves_dict_offset):
     sensor_count = 0
     sensor = TempSet.SensorGateway()
@@ -607,25 +234,35 @@ if args.conf:
         print("config_file", config_file)
 
 if args.get:
-    add_config()
+    conf = TempSet.Config()
+    sensor = TempSet.SensorGateway()
+    conf.read_config(0, config_file, verbose_level)
+    sensor.get_sensor_list(conf.temp_all)
+    conf.add_config(config_file, sensor.sensor_list, verbose_level)
+    sys.exit(0)
 
 if args.setup:
-    return_val = write_config()
-    if return_val == 0:  # todo check if useful
-        print("read config file which has been created")
-        read_config(1, config_file)
-        print("create database incl. tables")
-        create_database(db_all, db_fields_all, verbose_level)
+    conf = TempSet.Config()
+    conf.input_config(config_file, db_all, temp_all)
+    if conf.input_ok:  # check if input correct
+        sensor = TempSet.SensorGateway()
+        sensor.get_sensor_list(conf.temp_all)
+        conf.write_config(config_file, sensor.sensor_list, verbose_level)
+        conf.read_config(1, config_file, verbose_level)
+        create_database(conf.db_all, conf.db_fields_all, verbose_level)  # todo change
     sys.exit(0)
 
-return_val = read_config(0, config_file)  # db_all,db_fields_all,verbose_level)
-if verbose_level > 3:
-    print("return_val:: ", return_val)
+conf = TempSet.Config()
+conf.read_config(0, config_file, verbose_level)
 
-if return_val == {}:
-    print("Error: cannot find config file " + config_file)
-    print("Please run >temp.py --setup")
-    sys.exit(0)
+# return_val = read_config(0, config_file)  # db_all,db_fields_all,verbose_level)
+# if verbose_level > 3:
+#     print("return_val:: ", return_val)
+#
+# if return_val == {}:
+#     print("Error: cannot find config file " + config_file)
+#     print("Please run >temp.py --setup")
+#     sys.exit(0)
 
 
 if args.remote:
@@ -633,26 +270,27 @@ if args.remote:
     remote_set = 1
 
 if args.create:
-    create_database(db_all, db_fields_all, verbose_level)
+    create_database(conf.db_all, conf.db_fields_all, verbose_level)
     read_sens = 0
 
 if args.read:
-    read_records(args.read, db_all, db_fields_all, verbose_level, db_fields)
+    read_records(args.read, conf.db_all, conf.db_fields_all, verbose_level, conf.db_fields)
     read_sens = 0
 
 if args.kill:
-    kill_dbentries(db_all, verbose_level)
+    kill_dbentries(conf.db_all, verbose_level)
     read_sens = 0
 
 if args.xxx:
-    clean_records(db_fields, db_all, db_fields_all, verbose_level)
+    clean_records(conf.db_fields, conf.db_all, conf.db_fields_all, verbose_level)
     read_sens = 0
 
 if args.html_single:
-    write_html_single(html_single_file, db_all, db_fields_all, verbose_level, db_fields, web_alert_dict, web_field_dict)
+    write_html_single(conf.html_single_file, conf.db_all, conf.db_fields_all, verbose_level,
+                      conf.db_fields, conf.web_alert_dict, conf.web_field_dict)
     read_sens = 0
 
-if args.html_multi:
+if args.html_multi:  # todo function not work
     config_files = args.html_multi
     array2 = []
 
@@ -681,9 +319,9 @@ if args.html_multi:
 if read_sens:
     if verbose_level > 0:
         print(sys.argv[0], " - reading sensors ...  ", now)
-    read_items = read_sensors(1, temp_all, sensor_dict_offset)  # read + collect data
+    read_items = read_sensors(1, conf.temp_all, conf.sensor_dict_offset)  # read + collect data
     if database_level:
-        write_database(read_items, sensordata, sensor_dict, db_all, verbose_level)
+        write_database(read_items, sensordata, conf.sensor_dict, conf.db_all, verbose_level)
 
 # Quit python script
 sys.exit(0)
