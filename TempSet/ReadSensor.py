@@ -84,7 +84,7 @@ class ReadSensor(SensorGateway):
     def read_sensors(self, read_level, temp_all, sensor_slaves_dict_offset, dead_lo, dead_hi,
                      error_low, error_high, verbose_level):
 
-        sensor_count = 0
+        self.sensor_count = 0
 
         self.get_sensor_list(temp_all)
         # Open 1-wire slaves list for reading
@@ -93,7 +93,7 @@ class ReadSensor(SensorGateway):
 
         # Print header for results table
         if verbose_level > 0:
-            print('Sensor ID       |   Wert')
+            print('Sensor ID       |   value')
             print('------------------------------')
 
         # Repeat following steps with each 1-wire slave
@@ -133,5 +133,5 @@ class ReadSensor(SensorGateway):
             if read_level:
                 self.sensor_data.append((self.sensor_id, value))  # store value in database
         if verbose_level > 2:
-            print("sensors detected: ", sensor_count)
+            print("sensors detected: ", self.sensor_count)
             print("sensor_data: ", self.sensor_data)
