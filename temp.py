@@ -296,9 +296,11 @@ if args.html_multi:  # todo function not work
 if read_sens:
     if verbose_level > 0:
         print(sys.argv[0], " - reading sensors ...  ", now)
-    read_items = read_sensors(1, conf.temp_all, conf.sensor_dict_offset)  # read + collect data
+    # read_items = read_sensors(1, conf.temp_all, conf.sensor_dict_offset)  # read + collect data
+    read = TempSet.ReadSensor()
+    read.read_sensors(1, conf.temp_all, conf.sensor_dict_offset, dead_lo, dead_hi, error_low, error_high, verbose_level)
     if database_level:
-        write_database(read_items, sensordata, conf.sensor_dict, conf.db_all, verbose_level)
+        write_database(read.sensor_count, read.sensor_data, conf.sensor_dict, conf.db_all, verbose_level)  # todo change
 
 # Quit python script
 sys.exit(0)

@@ -7,7 +7,7 @@ class ReadSensor(SensorGateway):
 
     def __init__(self):
         super().__init__()
-        self.sensor_data = None
+        self.sensor_data = []
         self.sensor_type = None
         self.sensor_id = None
         self.vdd = None
@@ -128,7 +128,7 @@ class ReadSensor(SensorGateway):
                     print(str(self.sensor_id) + ' | {:5.2f} {}'.format(value, '%rH'))  # Print value
                 else:
                     print(str(self.sensor_id) + ' | {:5.3f} {}'.format(value, '°C'))  # Print value
-            self.sensor_count = self.sensor_count + 1
+            self.sensor_count += 1
 
             if read_level:
                 self.sensor_data.append((self.sensor_id, value))  # store value in database
