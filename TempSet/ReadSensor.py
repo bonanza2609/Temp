@@ -72,8 +72,11 @@ class ReadSensor(SensorGateway):
 
             if self.sensor_type == "DS2438":
                 self._sensor_ds2438(sensor_slave, sensor_slave_dict_offset, verbose_level)
-            else:  # default DS18S20 / DS18B20
+            elif self.sensor_type == "DS18S20" or self.sensor_type == "DS18b20":
                 self._sensor_ds18x20(sensor_slave, sensor_slave_dict_offset, verbose_level)
+            else:
+                print("unknown Type of sensor:", self.sensor_type)
+                sys.exit(1)
                 
         except IOError:
             print("PANIC read_sensor - Cannot find sensor >" + sensor_slave + "< on OW Server")
@@ -126,8 +129,10 @@ class ReadSensor(SensorGateway):
                 if self.sensor_type == 'DS2438':
                     # DS2438
                     print(str(self.sensor_id) + ' | {:5.2f} {}'.format(value, '%rH'))  # Print value
-                else:
+                elif self.sensor_type == "DS18S20" or self.sensor_type == "DS18b20":
                     print(str(self.sensor_id) + ' | {:5.3f} {}'.format(value, '°C'))  # Print value
+                else:
+                    print("unknown Type of sensor:", self.sensor_type)
             self.sensor_count += 1
 
             if read_level:
