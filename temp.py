@@ -235,6 +235,8 @@ if read_sens:
     read.read_sensors(1, conf.temp_all, conf.sensor_dict_offset, dead_lo, dead_hi, error_low, error_high, verbose_level)
     if database_level:
         write_database(read.sensor_count, read.sensor_data, conf.sensor_dict, conf.db_all, verbose_level)  # todo change
+    else:
+        print("No Data writen in Database!")
 
 # Quit python script
 sys.exit(0)
