@@ -72,11 +72,6 @@ class Config:
             print('host       :', temp_all[0])
             print('port       :', temp_all[1])
 
-            # print(
-            #     "check: " + db_all[0] + " " + db_all[1] + " " + db_all[2]
-            #     + " " + db_all[3] + " " + db_all[4] + " " + db_all[5]
-            #     + " " + temp_all[0] + " " + temp_all[1])
-
             var = input("Enter ok: ")
             if var != "ok":
                 print("no file created")
@@ -178,7 +173,7 @@ class Config:
                     print(w1_slave)
                 file_config.write("#Sensor " + w1_slave + "\n")
 
-    def read_config(self, init_level, config_file, verbose_level):
+    def read_config(self, init_level, config_file, db_all_remote, temp_all_remote, verbose_level):
 
         db_host = ""
         db_port = ""
@@ -187,12 +182,12 @@ class Config:
         db_table = ""
         db_database = ""
 
-        db_r_host = ""
-        db_r_port = ""
-        db_r_user = ""
-        db_r_password = ""
-        db_r_table = ""
-        db_r_database = ""
+        db_r_host = db_all_remote[0]
+        db_r_port = db_all_remote[1]
+        db_r_user = db_all_remote[2]
+        db_r_password = db_all_remote[3]
+        db_r_table = db_all_remote[4]
+        db_r_database = db_all_remote[5]
 
         db_dict = {}
         db_fields = []
@@ -201,8 +196,8 @@ class Config:
         temp_host = ""
         temp_port = ""
 
-        temp_r_host = ""
-        temp_r_port = ""
+        temp_r_host = temp_all_remote[0]
+        temp_r_port = temp_all_remote[1]
 
         web_field_dict = {}
         web_alert_dict = {}

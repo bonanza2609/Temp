@@ -4,17 +4,13 @@
 # Read 1-Wire sensors and write into database
 #
 
-# import ow
-# import os
-# import sys
-# import datetime
+import sys
 import time
 import argparse  # analyze command line arguments
 
 import TempSet
 
 from temp_html import *
-from temp_database import *
 
 config_file = 'temp-config.txt'
 html_single_file = 'www/temp-single.html'
@@ -51,18 +47,17 @@ temp_r_port = "4304"                # port
 temp_all = [temp_host, temp_port]
 temp_all_remote = [temp_r_host, temp_r_port]
 
-sensordata = []
-remote_set = 0
-
-verbose_level = 1  # default: show status messages
+remote_set = 0      # default: use Normal Database and Temp Server
+verbose_level = 1   # default: show status messages
 database_level = 1  # default: write to database
-config_level = 0  # default: do not read config file
-setup_level = 0  # default: do not read config file
-read10_level = 0  # default: do not read
-remote_level = 0  # default: use local database
+config_level = 0    # default: do not read config file
+setup_level = 0     # default: do not read config file
+read10_level = 0    # default: do not read
+remote_level = 0    # default: use local database
 read_sens = 1
 
 version = '1.7'
+
 
 # -------------------------------------------------------------------------------------------
 
@@ -133,9 +128,9 @@ if args.setup:
 # -------------------------------------------------------------------------------------------
 
 
-def version_main(v_main):
+def version_main(v_main):  # todo check if possible tu use with class's
     print("version_main: ", v_main)
-    print(version_db())
+    # print(version_db())
     print(version_html())
 
     sys.exit(0)
@@ -157,7 +152,7 @@ if args.conf:
 if args.get:
     conf = TempSet.Config()
     sensor = TempSet.SensorGateway()
-    conf.read_config(0, config_file, verbose_level)
+    conf.read_config(0, config_file, db_all_remote, temp_all_remote, verbose_level)
     sensor.get_sensor_list(conf.temp_all)
     conf.add_config(config_file, sensor.sensor_list, verbose_level)
     sys.exit(0)
@@ -169,31 +164,37 @@ if args.setup:
         sensor = TempSet.SensorGateway()
         sensor.get_sensor_list(conf.temp_all)
         conf.write_config(config_file, sensor.sensor_list, verbose_level)
-        conf.read_config(1, config_file, verbose_level)
-        create_database(conf.db_all, conf.db_fields_all, verbose_level)  # todo change
+        conf.read_config(1, config_file, db_all_remote, temp_all_remote, verbose_level)
+        db = TempSet.Influx()
+        db.create_database(conf.db_all, verbose_level)
     sys.exit(0)
 
 conf = TempSet.Config()
-conf.read_config(0, config_file, verbose_level)
+conf.read_config(0, config_file, db_all_remote, temp_all_remote, verbose_level)
 
 if args.remote:
-    db_all = db_all_remote
+    conf.db_all = conf.db_all_remote
+    conf.temp_all = conf.temp_all_remote
     remote_set = 1
 
 if args.create:
-    create_database(conf.db_all, conf.db_fields_all, verbose_level)
+    db = TempSet.Influx()
+    db.create_database(db_all, verbose_level)
     read_sens = 0
 
 if args.read:
-    read_records(args.read, conf.db_all, conf.db_fields_all, verbose_level, conf.db_fields)
+    db = TempSet.Influx()
+    db.read_records(args.read, conf.db_all, conf.db_fields_all, verbose_level, conf.db_fields)
     read_sens = 0
 
 if args.kill:
-    kill_dbentries(conf.db_all, verbose_level)
+    db = TempSet.Influx()
+    db.kill_db_entries(conf.db_all, verbose_level)
     read_sens = 0
 
 if args.xxx:
-    clean_records(conf.db_fields, conf.db_all, conf.db_fields_all, verbose_level)
+    db = TempSet.Influx()
+    db.clean_records(conf.db_fields, conf.db_all, conf.db_fields_all, verbose_level)
     read_sens = 0
 
 if args.html_single:
@@ -230,11 +231,11 @@ if args.html_multi:  # todo function not work
 if read_sens:
     if verbose_level > 0:
         print(sys.argv[0], " - reading sensors ...  ", now)
-    # read_items = read_sensors(1, conf.temp_all, conf.sensor_dict_offset)  # read + collect data
     read = TempSet.ReadSensor()
     read.read_sensors(1, conf.temp_all, conf.sensor_dict_offset, dead_lo, dead_hi, error_low, error_high, verbose_level)
     if database_level:
-        write_database(read.sensor_count, read.sensor_data, conf.sensor_dict, conf.db_all, verbose_level)  # todo change
+        db = TempSet.Influx()
+        db.write_database(read.sensor_count, read.sensor_data, conf.sensor_dict, conf.db_all, verbose_level)
     else:
         print("No Data writen in Database!")
 
