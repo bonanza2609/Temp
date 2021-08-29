@@ -39,7 +39,7 @@ class Influx:
             print('table      :', db_table)
             sys.exit(2)
 
-    def db_interaction(self, db_all, stmt_x, int_level, verbose_level):
+    def db_interaction(self, db_all, stmt_x, db_level, verbose_level):
 
         db_host = db_all[0]
         db_port = db_all[1]
@@ -54,24 +54,24 @@ class Influx:
         self.db_connect(db_all, 1, verbose_level)  # open connection without databases
 
         try:
-            if int_level == 0:  # create database
+            if db_level == 0:  # create database
                 self.db_connect(db_all, 1, verbose_level)  # open connection without databases
                 self.db.create_database(stmt_x)
                 self.db.close()
-            elif int_level == 1:  # write into database
+            elif db_level == 1:  # write into database
                 self.db_connect(db_all, 0, verbose_level)  # open connection with databases
                 self.db.write_points(stmt_x)
                 self.db.close()
-            elif int_level == 2:  # read from database
+            elif db_level == 2:  # read from database
                 self.db_connect(db_all, 0, verbose_level)  # open connection with databases
                 self.db_val_x = self.db.query(stmt_x)
                 self.db.close()
-            elif int_level == 3:  # kill table from database
+            elif db_level == 3:  # kill table from database
                 self.db_connect(db_all, 0, verbose_level)  # open connection with databases
                 self.db.drop_measurement(stmt_x)
                 self.db.close()
             else:
-                print("unknown int_level for stmt: ", stmt_x)
+                print("unknown db_level for stmt: ", stmt_x)
 
         except IOError:
             print('PANIC - cannot interact with database table')
