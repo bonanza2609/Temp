@@ -59,7 +59,7 @@ def db_connect(db_all, nodb, verbose_level):
 # -------------------------------------------------------------------------------------------
 
 
-def create_database(db_all, db_fields_all, verbose_level):
+def create_database(db_all, verbose_level):
     db_database = db_all[1]
     db_table = db_all[0]
     db_host = db_all[2]
