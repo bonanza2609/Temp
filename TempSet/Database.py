@@ -140,7 +140,7 @@ class Influx:
 
         self.db_interaction(db_all, json_body, 1, verbose_level)
 
-    def read_records(self, db_lines, db_all, db_fields_all, verbose_level, db_fields):  # todo at work
+    def read_records(self, db_lines, db_all, db_fields_all, verbose_level, db_fields):  # todo at work db_fields usefull?
 
         db_table = db_all[4]
 
@@ -219,3 +219,35 @@ class Influx:
         else:
             print("no records retrieved from database")
             return 0
+
+    @staticmethod
+    def clean_records(db_fields, db_all, db_fields_all, verbose_level):
+
+        if verbose_level > 1:
+            print("Verbose Level:", verbose_level)
+        print("no entries can be deleted from the database use 'influx' in the console")
+        print('host       :', db_all[0])
+        print('port       :', db_all[1])
+        print('user       :', db_all[2])
+        print('passwd     :', db_all[3])
+        print('database   :', db_all[4])
+        print('table      :', db_all[5])
+        print('field      :', db_fields)
+        print('field_all  :', db_fields_all)
+
+    def kill_db_entries(self, db_all, verbose_level):
+
+        db_table = db_all[4]
+        db_database = db_all[5]
+        print('DELETE ALL ENTRIES FROM DATABASE', db_table, 'from', db_database, )
+        var = input('Enter yes: ')
+        if var == 'yes':
+            var = input('Confirm drop Database Entries Enter yes: ')
+            if var == 'yes':
+                stmt = 'DELETE FROM ' + db_table + ' WHERE 1'
+                if verbose_level > 1:
+                    print(stmt)
+                self.db_interaction(db_all, stmt, 3, verbose_level)
+
+        else:
+            print('request cancelled')
