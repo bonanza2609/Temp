@@ -184,7 +184,7 @@ if args.create:
 
 if args.read:
     db = TempSet.Influx()
-    db.read_records(args.read, conf.db_all, conf.db_fields_all, verbose_level, conf.db_fields)
+    db.read_records(args.read, conf.db_all, conf.db_fields_str, verbose_level, conf.db_fields)
     read_sens = 0
 
 if args.kill:
@@ -194,11 +194,11 @@ if args.kill:
 
 if args.xxx:
     db = TempSet.Influx()
-    db.clean_records(conf.db_fields, conf.db_all, conf.db_fields_all, verbose_level)
+    db.clean_records(conf.db_fields, conf.db_all, conf.db_fields_str, verbose_level)
     read_sens = 0
 
 if args.html_single:
-    write_html_single(conf.html_single_file, conf.db_all, conf.db_fields_all, verbose_level,
+    write_html_single(conf.html_single_file, conf.db_all, conf.db_fields_str, verbose_level,
                       conf.db_fields, conf.web_alert_dict, conf.web_field_dict)
     read_sens = 0
 

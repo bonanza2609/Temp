@@ -10,7 +10,7 @@ class Config:
         self.temp_all = []
         self.temp_all_remote = []
         self.db_fields = []
-        self.db_fields_all = ""
+        self.db_fields_str = ""
         self.web_field_dict = {}
         self.web_alert_dict = {}
         self.sensor_dict = {}
@@ -191,7 +191,7 @@ class Config:
 
         db_dict = {}
         db_fields = []
-        db_fields_all = ""
+        db_fields_str = ""
 
         temp_host = ""
         temp_port = ""
@@ -292,12 +292,12 @@ class Config:
                 if verbose_level > 2:
                     print("db_fields: ", db_fields[x])
                 if x == 0:
-                    db_fields_all = str(db_fields[x])
+                    db_fields_str = str(db_fields[x])
                 else:
-                    db_fields_all = db_fields_all + ", " + str(db_fields[x])
+                    db_fields_str = db_fields_str + ", " + str(db_fields[x])
                 db_dict[db_fields[x]] = x
             if verbose_level > 2:
-                print("all db fields: ", db_fields_all)
+                print("all db fields: ", db_fields_str)
 
             self.db_all = [db_host, db_port, db_user, db_password, db_table, db_database]
             self.db_all_remote = [db_r_host, db_r_port, db_r_user, db_r_password, db_r_table, db_r_database]
@@ -306,7 +306,7 @@ class Config:
             self.temp_all_remote = [temp_r_host, temp_r_port]
 
             self.db_fields = db_fields
-            self.db_fields_all = db_fields_all
+            self.db_fields_str = db_fields_str
 
             self.web_alert_dict = web_alert_dict
             self.web_field_dict = web_field_dict
