@@ -1,4 +1,5 @@
 import time
+import os
 
 
 class Config:
@@ -77,7 +78,7 @@ class Config:
                 print("no file created")
                 self.input_ok = False
 
-    def write_config(self, config_file, w1_slaves, verbose_level):
+    def write_config(self, config_file, path, html_single_file, w1_slaves, verbose_level):
 
         db_host = self.db_all[0]
         db_port = self.db_all[1]
@@ -91,12 +92,12 @@ class Config:
 
         print("creating config file now...")
         now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
-        with open(config_file, "w") as file_config:
+        with open(os.path.join(path, config_file), "w") as file_config:
             file_config.write("# config file for temp.py\n")
             file_config.write("# created on " + now + "\n")
             file_config.write("# -----------------------------------------------------------\n")
             file_config.write("# Web config file path/name \n")
-            file_config.write("html_file www/temp-single.html\n")
+            file_config.write("html_file " + html_single_file + "\n")
             file_config.write("# -----------------------------------------------------------\n")
             file_config.write("# Influxdb Server\n")
             file_config.write("# Syntax:\n")
@@ -156,11 +157,11 @@ class Config:
                 file_config.write("Sensor " + w1_slave + "  0   tbd-\n")
 
     @staticmethod
-    def add_config(config_file, w1_slaves, verbose_level):
+    def add_config(config_file, path, w1_slaves, verbose_level):
 
         now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
 
-        with open(config_file, "a") as file_config:
+        with open(os.path.join(path, config_file), "a") as file_config:
             file_config.write("\n# ----------------------------------------\n")
             file_config.write("# sensors added on " + now + "\n")
             file_config.write("# ----------------------------------------\n")
@@ -173,7 +174,7 @@ class Config:
                     print(w1_slave)
                 file_config.write("#Sensor " + w1_slave + "\n")
 
-    def read_config(self, init_level, config_file, db_all_remote, temp_all_remote, verbose_level):
+    def read_config(self, init_level, config_file, path, db_all_remote, temp_all_remote, verbose_level):
 
         db_host = ""
         db_port = ""
@@ -213,7 +214,7 @@ class Config:
         now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
 
         if verbose_level > 1:
-            print("reading config file ", config_file)
+            print("reading config file ", os.path.join(path, config_file))
 
         if verbose_level > 1:
             print("-------------------------------------", now)
@@ -344,4 +345,4 @@ class Config:
 
         except IOError:
             print("----------------------", now)
-            print("Cannot find file: " + config_file)
+            print("Cannot find file: " + os.path.join(path, config_file))

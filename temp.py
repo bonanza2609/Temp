@@ -4,6 +4,7 @@
 # Read 1-Wire sensors and write into database
 #
 
+import os
 import sys
 import time
 import argparse  # analyze command line arguments
@@ -47,14 +48,11 @@ temp_r_port = "4304"                # port
 temp_all = [temp_host, temp_port]
 temp_all_remote = [temp_r_host, temp_r_port]
 
-remote_set = 0      # default: use Normal Database and Temp Server
-verbose_level = 1   # default: show status messages
-database_level = 1  # default: write to database
-config_level = 0    # default: do not read config file
-setup_level = 0     # default: do not read config file
-read10_level = 0    # default: do not read
-remote_level = 0    # default: use local database
-read_sens = 1
+remote_set = 0      # default: [0] use Normal Database and Temp Server
+setup_level = 0     # default: [0] do not read config file
+read_sens = 1       # default: [1] read sensors
+database_level = 1  # default: [1] write to database
+verbose_level = 1   # default: [1] show status messages
 
 version = '1.7'
 
@@ -127,7 +125,6 @@ if args.setup:
 # -------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------
 
-
 def version_main(v_main):  # todo check if possible tu use with class's
     print("version_main: ", v_main)
     # print(version_db())
@@ -140,6 +137,7 @@ def version_main(v_main):  # todo check if possible tu use with class's
 # -------------------------------------------------------------------------------------------
 
 now = time.strftime("%d.%m.%Y - %H:%M:%S Uhr")
+path = os.path.dirname(__file__)
 
 if args.version:
     version_main(version)
@@ -152,9 +150,9 @@ if args.conf:
 if args.get:
     conf = TempSet.Config()
     sensor = TempSet.SensorGateway()
-    conf.read_config(0, config_file, db_all_remote, temp_all_remote, verbose_level)
+    conf.read_config(0, config_file, path, db_all_remote, temp_all_remote, verbose_level)
     sensor.get_sensor_list(conf.temp_all)
-    conf.add_config(config_file, sensor.sensor_list, verbose_level)
+    conf.add_config(config_file, path, sensor.sensor_list, verbose_level)
     sys.exit(0)
 
 if args.setup:
@@ -163,14 +161,14 @@ if args.setup:
     if conf.input_ok:  # check if input correct
         sensor = TempSet.SensorGateway()
         sensor.get_sensor_list(conf.temp_all)
-        conf.write_config(config_file, sensor.sensor_list, verbose_level)
-        conf.read_config(1, config_file, db_all_remote, temp_all_remote, verbose_level)
+        conf.write_config(config_file, path, html_single_file, sensor.sensor_list, verbose_level)
+        conf.read_config(1, config_file, path, db_all_remote, temp_all_remote, verbose_level)
         db = TempSet.Influx()
         db.create_database(conf.db_all, verbose_level)
     sys.exit(0)
 
 conf = TempSet.Config()
-conf.read_config(0, config_file, db_all_remote, temp_all_remote, verbose_level)
+conf.read_config(0, config_file, path, db_all_remote, temp_all_remote, verbose_level)
 
 if args.remote:
     conf.db_all = conf.db_all_remote
@@ -225,7 +223,7 @@ if args.html_multi:  # todo function not work
         array2.append(array1)
         if verbose_level > 2:
             print("Array2: ", array2)
-    write_html_multi(html_multi_file, verbose_level, array2, remote_set)
+    write_html_multi(html_multi_file, verbose_level, array2, remote_set)  # path
     read_sens = 0
 
 if read_sens:
