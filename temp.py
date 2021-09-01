@@ -169,6 +169,7 @@ if args.setup:
 
 conf = TempSet.Config()
 conf.read_config(0, config_file, path, db_all_remote, temp_all_remote, verbose_level)
+db = TempSet.Influx()
 
 if args.remote:
     conf.db_all = conf.db_all_remote
@@ -176,22 +177,18 @@ if args.remote:
     remote_set = 1
 
 if args.create:
-    db = TempSet.Influx()
     db.create_database(db_all, verbose_level)
     read_sens = 0
 
 if args.read:
-    db = TempSet.Influx()
     db.read_records(args.read, conf.db_all, conf.db_fields_str, verbose_level, conf.db_fields)
     read_sens = 0
 
 if args.kill:
-    db = TempSet.Influx()
     db.kill_db_entries(conf.db_all, verbose_level)
     read_sens = 0
 
 if args.xxx:
-    db = TempSet.Influx()
     db.clean_records(conf.db_fields, conf.db_all, conf.db_fields_str, verbose_level)
     read_sens = 0
 
@@ -232,7 +229,6 @@ if read_sens:
     read = TempSet.ReadSensor()
     read.read_sensors(1, conf.temp_all, conf.sensor_dict_offset, dead_lo, dead_hi, error_low, error_high, verbose_level)
     if database_level:
-        db = TempSet.Influx()
         db.write_database(read.sensor_count, read.sensor_data, conf.sensor_dict, conf.db_all, verbose_level)
     else:
         print("No Data writen in Database!")

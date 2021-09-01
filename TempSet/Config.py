@@ -315,7 +315,7 @@ class Config:
             self.sensor_dict = sensor_dict
             self.sensor_dict_offset = sensor_dict_offset
 
-            self.html_single_file = html_single_file
+            self.html_single_file = os.path.join(os.path.dirname(config_file), html_single_file)
 
             if verbose_level > 1:
                 print("Database  (local) : ", self.db_all)
