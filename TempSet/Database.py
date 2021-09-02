@@ -162,7 +162,7 @@ class Influx:
             if self.db_val_x:
                 db_t_count = len(list(self.db_val_x)[0])
 
-            if verbose_level > 0:
+            if verbose_level > 1:
                 print("db_time", db_time)
                 print("db_time_value", db_time_value)
                 print("db_time_suffix", db_time_suffix)
