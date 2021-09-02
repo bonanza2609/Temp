@@ -6,8 +6,9 @@ class Influx:
     def __init__(self):
         self.db = None
         self.db_val_x = None
+        self.dataset = []
 
-    def db_connect(self, db_all, no_db, verbose_level):
+    def _db_connect(self, db_all, no_db, verbose_level):
 
         db_host = db_all[0]
         db_port = db_all[1]
@@ -51,25 +52,30 @@ class Influx:
         if verbose_level > 2:
             print("stmt", stmt_x)
 
-        self.db_connect(db_all, 1, verbose_level)  # open connection without databases
-
         try:
             if db_level == 0:  # create database
-                self.db_connect(db_all, 1, verbose_level)  # open connection without databases
+                self._db_connect(db_all, 1, verbose_level)  # open connection without database
                 self.db.create_database(stmt_x)
                 self.db.close()
             elif db_level == 1:  # write into database
-                self.db_connect(db_all, 0, verbose_level)  # open connection with databases
+                self._db_connect(db_all, 0, verbose_level)  # open connection with database
                 self.db.write_points(stmt_x)
                 self.db.close()
             elif db_level == 2:  # read from database
-                self.db_connect(db_all, 0, verbose_level)  # open connection with databases
+                self._db_connect(db_all, 0, verbose_level)  # open connection with database
                 self.db_val_x = self.db.query(stmt_x)
                 self.db.close()
             elif db_level == 3:  # kill table from database
-                self.db_connect(db_all, 0, verbose_level)  # open connection with databases
+                self._db_connect(db_all, 0, verbose_level)  # open connection with database
                 self.db.drop_measurement(stmt_x)
                 self.db.close()
+            elif db_level == 4:  # open database
+                self._db_connect(db_all, 0, verbose_level)  # open connection with database
+            elif db_level == 5:  # close database
+                self.db.close()
+            elif db_level == 6:  # read from database without close Database
+                self.db_val_x = self.db.query(stmt_x)
+
             else:
                 print("unknown db_level for stmt: ", stmt_x)
 
@@ -114,9 +120,7 @@ class Influx:
             sen_loc = str(sensor_dict.get(dataset[0]))  # wert der location zuordnen
             if verbose_level > 1:
                 print(dataset, '-> Sensor ID:', dataset[0], 'temp.: ', dataset[1], 'location:', sen_loc)
-            if sen_loc == 'None':
-                print('PANIC: unknown sensor ', dataset[0])
-            elif x == 0:  # verarbeitet des ersten datensatzes # todo check ?
+            if sen_loc:
                 json_body.append(
                     {
                         "measurement": db_table,
@@ -125,14 +129,8 @@ class Influx:
                         }
                     })
 
-            else:  # Verarbeiten der restlichen datensätze
-                json_body.append(
-                    {
-                        "measurement": db_table,
-                        "fields": {
-                            sen_loc: float(dataset[1])
-                        }
-                    })
+            else:
+                print('PANIC: unknown sensor ', dataset[0])
 
         print("0-script")
         if verbose_level > 1:
@@ -140,7 +138,8 @@ class Influx:
 
         self.db_interaction(db_all, json_body, 1, verbose_level)
 
-    def read_records(self, db_lines, db_all, db_fields_all, verbose_level, db_fields):  # todo at work db_fields usefull?
+    def read_records(self, db_lines, db_all, db_fields_str, verbose_level, db_fields):
+        loop = True
 
         db_table = db_all[4]
 
@@ -150,78 +149,104 @@ class Influx:
         if verbose_level > 0:
             print("show last " + str(db_lines) + " record(s) from database")
 
-        query_count = 'SELECT * FROM ' + db_table
-        if verbose_level > 1:
-            print("query_count:", query_count)
+        self.db_interaction(db_all, "X", 4, verbose_level)
+        db_time_value = 10
+        db_time_suffix = 'm'
+        db_t_count = 0
+        db_time_max = 104
 
-        self.db_interaction(db_all, query_count, 2, verbose_level)
-        results_count = self.db_val_x
+        while loop:
+            db_time = str(db_time_value) + db_time_suffix
+            query_count = 'SELECT * FROM ' + db_table + ' WHERE TIME > now() - ' + db_time
+            self.db_interaction(db_all, query_count, 6, verbose_level)
+            if self.db_val_x:
+                db_t_count = len(list(self.db_val_x)[0])
 
-        # results_count = db.query(query_count)  # holt altuelle anzahl an einträgen aus datenbank
-        # db.close()
-
-        for x in results_count:  # umrechnung der totalen anzahl und der gewünschten anzahl
-            count = list(x)
-            total_count = len(count)
-            if verbose_level > 1:
-                print("count:", len(count))
-                print("total_count:", total_count)
-
-        db_offset = str(total_count - db_lines)
-        if verbose_level > 1:
-            print("db_offset:", db_offset)
-
-        stmt = 'SELECT * FROM ' + db_table + ' LIMIT ' + str(db_lines) + ' OFFSET ' + db_offset
-        if verbose_level > 1:
-            print("stmt:", stmt)
-
-        self.db_interaction(db_all, stmt, 2, verbose_level)
-        dbval = self.db_val_x
-
-        if verbose_level > 1:
-            print("dbval:", dbval)
-
-        if dbval != 0:
             if verbose_level > 0:
-                print('Datum                             , ' + db_fields_all)
+                print("db_time", db_time)
+                print("db_time_value", db_time_value)
+                print("db_time_suffix", db_time_suffix)
+                print("db_t_count", db_t_count)
+                print("query_count", query_count)
+
+            if db_t_count >= db_lines:
+                loop = False
+            else:
+                if db_time_value <= 50 and db_time_suffix == 'm':
+                    db_time_value += 10
+                elif db_time_value == 60 and db_time_suffix == 'm':
+                    db_time_value = 1
+                    db_time_suffix = 'h'
+
+                elif db_time_value <= 23 and db_time_suffix == 'h':
+                    db_time_value += 1
+                elif db_time_value == 24 and db_time_suffix == 'h':
+                    db_time_value = 1
+                    db_time_suffix = 'd'
+
+                elif db_time_value <= 6 and db_time_suffix == 'd':
+                    db_time_value += 1
+                elif db_time_value == 7 and db_time_suffix == 'd':
+                    db_time_value = 1
+                    db_time_suffix = 'w'
+
+                elif db_time_value == db_time_max and db_time_suffix == 'w':
+                    print("time value :", db_time)
+                    print("Break Loop !")
+                    break
+
+                elif db_time_value >= 1 and db_time_suffix == 'w':
+                    db_time_value += 1
+
+                else:
+                    print("db_time_value unknown break")
+                    break
+
+        self.db_interaction(db_all, "X", 5, verbose_level)
+
+        if verbose_level > 1:
+            print("db_value:", self.db_val_x)
+
+        if self.db_val_x:
+            if verbose_level > 0:
+                print('Datum                             , ' + db_fields_str)
                 print(
-                    '----------------------------------------------------------------------------------------------------')
+                    '-------------------------------------------------------'
+                    '-------------------------------------------------------')
 
             if verbose_level > 1:
                 print("db_lines: ", db_lines)
+                print("db_t_count: ", db_t_count)
                 print("db_fields: ", db_fields)
-                print("db_fields_all: ", db_fields_all)
+                print("db_fields_str: ", db_fields_str)
 
-            for x in dbval:
-                array = list(x)
-                for x in range(0, db_lines):
-                    output = []
-                    dataset = list(array)[x]
+            for x in range(0, db_t_count):
+                output = []
+                self.dataset = list(list(self.db_val_x)[0])[x]
+                if verbose_level > 1:
+                    print(x)
+                    print(self.dataset)
+                field_list = self.dataset.get("time")  # read timestamp
+                output.append(field_list)  # put timestamp in to output
+                if verbose_level > 1:
+                    print("Field: time")
+                    print("Field entry:", field_list)
+                for y in range(len(db_fields)):
+                    field = db_fields[y]
+                    field_list = self.dataset.get(field)
+                    output.append(field_list)
                     if verbose_level > 1:
-                        print(x)
-                        print(dataset)
-                    field_list = dataset.get("time")  # read timestamp
-                    output.append(field_list)  # put timestamp in to output
-                    if verbose_level > 1:
-                        print("Field: time")
+                        print("Field:", field)
                         print("Field entry:", field_list)
-                    for y in range(len(db_fields)):
-                        field = db_fields[y]
-                        field_list = dataset.get(field)
-                        output.append(field_list)
-                        if verbose_level > 1:
-                            print("Field:", field)
-                            print("Field entry:", field_list)
-                    if verbose_level > 0:
-                        print(output)
+                if verbose_level > 0:
+                    print(output)
 
-            return (dataset)
         else:
             print("no records retrieved from database")
             return 0
 
     @staticmethod
-    def clean_records(db_fields, db_all, db_fields_all, verbose_level):
+    def clean_records(db_fields, db_all, db_fields_str, verbose_level):
 
         if verbose_level > 1:
             print("Verbose Level:", verbose_level)
@@ -233,7 +258,7 @@ class Influx:
         print('database   :', db_all[4])
         print('table      :', db_all[5])
         print('field      :', db_fields)
-        print('field_all  :', db_fields_all)
+        print('field_str  :', db_fields_str)
 
     def kill_db_entries(self, db_all, verbose_level):
 
