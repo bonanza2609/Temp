@@ -7,6 +7,7 @@
 # import sys  # Import sys module
 # import datetime
 from temp_database import read_records
+import TempSet
 
 config_fiels = []
 
@@ -76,11 +77,13 @@ def write_html_multi(html_multi_file, verbose_level, config_files, remote_set):
 def write_html_single(file_name, db_all, db_fields_all, verbose_level, db_fields, web_alert_dict, web_field_dict):
     if verbose_level > 1:
         print("read database")
-    dataset = read_records(1, db_all, db_fields_all, verbose_level, db_fields)
+    db = TempSet.Influx()
+    db.read_records(1, db_all, db_fields_all,verbose_level, db_fields)
+    # dataset = read_records(1, db_all, db_fields_all, verbose_level, db_fields)
     if verbose_level > 3:
-        print("Dataset-(html): ", dataset)
+        print("Dataset-(html): ", db.dataset)
 
-    write_html(file_name, dataset, verbose_level, db_fields, web_alert_dict, web_field_dict)
+    write_html(file_name, db.dataset, verbose_level, db_fields, web_alert_dict, web_field_dict)
 
 
 # -------------------------------------------------------------------------------------------
@@ -90,8 +93,6 @@ def write_html(file_name, dataset, verbose_level, db_fields, web_alert_dict, web
     # Erstellt eine Datei und Öffnet sie zum beschreiben (writing 'w')
     if verbose_level > 0:
         print("create html: ", file_name)
-
-    colums = 3  # set up colums of web Page 2 or 3
 
     if verbose_level > 2:
         print("file_name: ", file_name)
@@ -108,38 +109,14 @@ def write_html(file_name, dataset, verbose_level, db_fields, web_alert_dict, web
         f.write("<html>" + "\n")
         f.write(" <head>" + "\n")
         f.write("  <title>Temperatur</title>" + "\n")
-        f.write("  <style type='text/css'>" + "\n")
-        f.write(
-            "   body { background-color: dimgrey; text-align: center; font-family: Verdana, Geneva, Tahoma, sans-serif; color: white }" + "\n")
-        f.write("   #werte { position: relative; margin-left: 2%; margin-top: 1% }" + "\n")
-        f.write(
-            "   #box { border: 5px solid darkgreen; background-color: lightgreen; font-size: 27px; font-weight: 900; color:black }" + "\n")
-        f.write(
-            "   #box-orange { border: 5px solid darkorange; background-color: peachpuff; font-size: 27px; font-weight: 900; color: black }" + "\n")
-        f.write(
-            "   #box-red { border: 5px solid darkred; background-color: lightpink; font-size: 27px; font-weight: 900; color: black }" + "\n")
-        f.write(
-            "   #box-blue { border: 5px solid darkblue; background-color: lightblue; font-size: 27px; font-weight: 900; color: black }" + "\n")
-        f.write(
-            "   #box-none { border: 5px solid darkgray; background-color: lightgray; font-size: 27px; font-weight: 900; color: black }" + "\n")  # !!
-        if colums == 3:
-            f.write("   #tag { float: center; margin-top: -0.5em }" + "\n")
-            f.write("   #field { float: center; font-size: 32px }" + "\n")
-            f.write(
-                "   .wert { float: left; height: 3.218em; width: 31%; margin-right: 0.5%; margin-bottom: 1%; margin-left: 0.5%; }" + "\n")
-        else:
-            f.write("   #tag { float: left; margin-left: 0.5em }" + "\n")
-            f.write("   #field { float: right; margin-right: 0.5em; font-size: 32px }" + "\n")
-            f.write(
-                "   .wert { float: left; height: 3.218em; width: 47%; margin-right: 0.5%; margin-bottom: 1%; margin-left: 0.5%; }" + "\n")
-        f.write("  </style>" + "\n")
+        f.write("  <link rel='stylesheet' href='./temp-style.css' />" + "\n")
         f.write(" </head>" + "\n")
         f.write(" <body>" + "\n")
         datetimestring = dataset.get("time")
         f.write("  <h3>Zeit in UTC:  " + str(datetimestring) + "</h3>" + "\n")
         if verbose_level > 1:
             print("date written html: ", str(datetimestring))
-        f.write("  <div id='werte'>" + "\n")
+        f.write("  <div class='values'>" + "\n")
 
         for x in range(len(db_fields)):
             field = db_fields[x]
@@ -149,7 +126,8 @@ def write_html(file_name, dataset, verbose_level, db_fields, web_alert_dict, web
             if verbose_level > 2:
                 print("field_list", field_list)
                 print("field_list(type", type(field_list))
-            if field_list != None:
+
+            if field_list:
                 if type(web_alert_temp) == tuple:  # (value 0 / value 1)
                     web_alert_temp_high = web_alert_temp[0]
                     web_alert_temp_low = web_alert_temp[1]
@@ -167,14 +145,13 @@ def write_html(file_name, dataset, verbose_level, db_fields, web_alert_dict, web
                     print("value3: ", value3)
                 if value1 >= 0:
                     field_id = "box-red"
+                elif value2 >= 0:
+                    field_id = "box-orange"
+                elif value3 <= 0:
+                    field_id = "box-blue"
                 else:
-                    if value2 >= 0:
-                        field_id = "box-orange"
-                    else:
-                        if value3 <= 0:
-                            field_id = "box-blue"
-                        else:
-                            field_id = "box"
+                    field_id = "box"
+
                 field_list = round(field_list, 1)
             else:
                 field_id = "box-none"
@@ -186,8 +163,12 @@ def write_html(file_name, dataset, verbose_level, db_fields, web_alert_dict, web
                 print("WEB-Alert-Temp (html):", web_alert_temp)
                 print("Field-ID (html):", field_id)
 
-            f.write("   <div id='" + field_id + "' class='wert'><p><div id='tag'>" + str(
-                web_tag) + "</div>    <div id='field'>" + str(field_list) + "  &deg;C</div></p></div>" + "\n")
+            f.write("   <div class='value'>\n"
+                    "    <div class='" + field_id + "'>\n"
+                    "     <div class='tag'>" + str(web_tag) + "</div>\n"
+                    "     <div class='field'>" + str(field_list) + "  &deg;C</div>\n"
+                    "    </div>\n"
+                    "   </div>\n")
 
         f.write("  </div>" + "\n")
         f.write(" </body>" + "\n")
@@ -196,7 +177,7 @@ def write_html(file_name, dataset, verbose_level, db_fields, web_alert_dict, web
         # Die Datei schlie�en
         f.close()
 
-    except:
+    except IOError:
         print("Error: can't open file " + file_name + " for writing")
         print("Please check if directory is existing")
 

@@ -128,7 +128,7 @@ if args.setup:
 def version_main(v_main):  # todo check if possible tu use with class's
     print("version_main: ", v_main)
     # print(version_db())
-    print(version_html())
+    # print(version_html())
 
     sys.exit(0)
 
@@ -141,6 +141,7 @@ path = os.path.dirname(__file__)
 
 if args.version:
     version_main(version)
+    read_sens = 0
 
 if args.conf:
     config_file = args.conf
@@ -153,7 +154,7 @@ if args.get:
     conf.read_config(0, config_file, path, db_all_remote, temp_all_remote, verbose_level)
     sensor.get_sensor_list(conf.temp_all)
     conf.add_config(config_file, path, sensor.sensor_list, verbose_level)
-    sys.exit(0)
+    read_sens = 0
 
 if args.setup:
     conf = TempSet.Config()
@@ -165,11 +166,12 @@ if args.setup:
         conf.read_config(1, config_file, path, db_all_remote, temp_all_remote, verbose_level)
         db = TempSet.Influx()
         db.create_database(conf.db_all, verbose_level)
-    sys.exit(0)
+    read_sens = 0
 
 conf = TempSet.Config()
 conf.read_config(0, config_file, path, db_all_remote, temp_all_remote, verbose_level)
 db = TempSet.Influx()
+h = TempSet.HtmlCreator()
 
 if args.remote:
     conf.db_all = conf.db_all_remote
@@ -193,8 +195,8 @@ if args.xxx:
     read_sens = 0
 
 if args.html_single:
-    write_html_single(conf.html_single_file, conf.db_all, conf.db_fields_str, verbose_level,
-                      conf.db_fields, conf.web_alert_dict, conf.web_field_dict)
+    h.write_html_single(conf.html_single_file, conf.db_all, conf.db_fields_str, verbose_level,
+                        conf.db_fields, conf.web_alert_dict, conf.web_field_dict)
     read_sens = 0
 
 if args.html_multi:  # todo function not work
