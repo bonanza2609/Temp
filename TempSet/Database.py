@@ -220,7 +220,12 @@ class Influx:
                 print("db_fields: ", db_fields)
                 print("db_fields_str: ", db_fields_str)
 
-            for x in range(0, db_t_count):
+            if db_lines > db_t_count:
+                count = db_t_count
+            else:
+                count = db_lines
+
+            for x in range(0, count):
                 output = []
                 self.dataset = list(list(self.db_val_x)[0])[x]
                 if verbose_level > 1:
