@@ -6,7 +6,7 @@
 # */15 * * * * /home/pi/temp/temp-writedb.sh
 # this will read the sensor every 15 minutes
 
-cd /home/pi/data/temp/
+cd /home/pi/data/temp/ || exit
 
 ## config 1 read (default)
 # read sensors and write into database
@@ -41,12 +41,12 @@ cd /home/pi/data/temp/
 # create html page with last dataset
 /usr/bin/python temp.py -b -w --conf temp-config-3.txt
 
-## multii html
+## multi html
 /usr/bin/python temp.py -b -wm temp-config-2.txt,temp-config-anzeige.txt,temp-config-3-anzeige.txt
 
-## copy temp*.html fils
+## copy temp*.html files
 sudo cp -r www/temp* /var/www/temp/
 
 echo ""
-echo "fiel(s) copyed"
+echo "File (s) copied"
 echo ""

@@ -13,7 +13,6 @@ class HtmlCreator(Influx):
         if verbose_level > 1:
             print("read database")
         self.read_records(1, db_all, db_fields_all, verbose_level, db_fields)
-        # dataset = read_records(1, db_all, db_fields_all, verbose_level, db_fields)
         if verbose_level > 3:
             print("Dataset-(html): ", self.dataset)
 
@@ -37,6 +36,7 @@ class HtmlCreator(Influx):
                 f.write("<!DOCTYPE html>" + "\n")
                 f.write("<html>" + "\n")
                 f.write(" <head>" + "\n")
+                f.write("  <meta charset='UTF-8'>" + "\n")
                 f.write("  <title>Temperatur</title>" + "\n")
                 f.write("  <link rel='stylesheet' href='./temp-style.css' />" + "\n")
                 f.write(" </head>" + "\n")

@@ -11,3 +11,7 @@
 /temp-config-4.txt
 /temp-config-5.txt
 /www/temp-single-4.html
+/_pycache_/
+/venv/
+/.idea/
+/www/skeleton/
