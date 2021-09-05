@@ -221,7 +221,7 @@ class Config:
 
         try:
 
-            with open(config_file, "r") as file:
+            with open(os.path.join(path, config_file), "r") as file:
                 settings = []
                 for line in file:
                     if line[0] != "#":  # i.e. ignore comment lines
@@ -346,3 +346,14 @@ class Config:
         except IOError:
             print("----------------------", now)
             print("Cannot find file: " + os.path.join(path, config_file))
+
+
+class ConfigMulti:
+
+    def __init__(self, db_all, db_all_remote, db_fields, db_fields_str, web_alert_dict, web_field_dict):
+        self.db_all = db_all
+        self.db_all_remote = db_all_remote
+        self.db_fields = db_fields
+        self.db_fields_str = db_fields_str
+        self.web_alert_dict = web_alert_dict
+        self.web_field_dict = web_field_dict

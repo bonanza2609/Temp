@@ -11,7 +11,7 @@ import argparse  # analyze command line arguments
 
 import TempSet
 
-from temp_html import *
+# from temp_html import *
 
 config_file = 'temp-config.txt'
 html_single_file = 'www/temp-single.html'
@@ -195,34 +195,25 @@ if args.xxx:
     read_sens = 0
 
 if args.html_single:
-    h.write_html_single(conf.html_single_file, conf.db_all, conf.db_fields_str, verbose_level,
-                        conf.db_fields, conf.web_alert_dict, conf.web_field_dict)
+    h.write_html_single(conf.html_single_file, path, conf.db_all, conf.db_fields, conf.db_fields_str,
+                        conf.web_alert_dict, conf.web_field_dict, verbose_level)
     read_sens = 0
 
 if args.html_multi:  # todo function not work
     config_files = args.html_multi
-    array2 = []
+    multi_conf = []
 
     if verbose_level > 2:
         print("config_files: ", config_files)
-    for x in config_files.split(","):
-        db_fields = []  # list of database fields
-        db_dict = {}  # dictionary
-        web_field_dict = {}  # dictionary
-        web_alert_dict = {}  # dictionary
-        sensor_list = []  # list of sensors
-        sensor_locations = []  # list of locations
-        sensor_dict = {}  # dictionary -> sensor : location
-        sensor_offset = []  # sensor offset
-        sensor_dict_offset = {}  # dictionary -> sensor : offset
+    for file in config_files.split(","):
 
-        array1 = read_config(1, x)
-        if verbose_level > 2:
-            print("Array1: ", array1)
-        array2.append(array1)
-        if verbose_level > 2:
-            print("Array2: ", array2)
-    write_html_multi(html_multi_file, verbose_level, array2, remote_set)  # path
+        conf.read_config(1, file, path, db_all_remote, temp_all_remote, verbose_level)
+        multi = TempSet.ConfigMulti(conf.db_all, conf.db_all_remote, conf.db_fields,
+                                    conf.db_fields_str,conf.web_alert_dict, conf.web_alert_dict)
+
+        multi_conf.append(multi)
+
+    h.write_html_multi(html_multi_file, path, config_files, multi_conf, remote_set, verbose_level)
     read_sens = 0
 
 if read_sens:

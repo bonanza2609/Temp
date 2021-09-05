@@ -1,25 +1,70 @@
 from .Database import Influx
+import os
 import sys
 
 
 class HtmlCreator(Influx):
 
     def __init__(self):
-        super(HtmlCreator, self).__init__()
+        super().__init__()
 
-    def write_html_single(self, file_name, db_all, db_fields_all,
-                          verbose_level, db_fields, web_alert_dict, web_field_dict):
+    def write_html_single(self, file_name, path, db_all, db_fields, db_fields_str,
+                          web_alert_dict, web_field_dict, verbose_level):
 
         if verbose_level > 1:
             print("read database")
-        self.read_records(1, db_all, db_fields_all, verbose_level, db_fields)
+        self.read_records(1, db_all, db_fields_str, verbose_level, db_fields)
         if verbose_level > 3:
             print("Dataset-(html): ", self.dataset)
 
-        self.write_html(file_name, self.dataset, verbose_level, db_fields, web_alert_dict, web_field_dict)
+        self.write_html(file_name, path, self.dataset, db_fields, web_alert_dict, web_field_dict, verbose_level)
+
+    def write_html_multi(self, html_multi_file, path, config_files, multi_conf, remote_set, verbose_level):  # todo at work
+        if verbose_level > 1:
+            print("read database's")
+
+        dataset_multi = {}
+        db_fields_multi = []
+        web_alert_dict_multi = {}
+        web_field_dict_multi = {}
+
+        for x in range(len(config_files)):
+            conf = config_files[x]
+            db_all = conf.get("db_all")
+            db_all_remote = conf.get("db_all_remote")
+            db_fields = conf.get("db_fields")
+            db_fields_all = conf.get("db_fields_all")
+            web_alert_dict = conf.get("web_alert_dict")
+            web_field_dict = conf.get("web_field_dict")
+            if verbose_level > 3:
+                print("conf: ", conf)
+                print("db_all: ", db_all)
+                print("db_all_remote: ", db_all_remote)
+                print("db_fields: ", db_fields)
+                print("db_fields_all: ", db_fields_all)
+                print("web_alert_dict: ", web_alert_dict)
+                print("web_field_dict: ", web_field_dict)
+            if remote_set == 1:
+                db_all = db_all_remote
+            dataset = read_records(1, db_all, db_fields_all, verbose_level, db_fields)
+            if verbose_level > 3:
+                print("Dataset-(html): ", dataset)
+            dataset_multi.update(dataset)
+            db_fields_multi.extend(db_fields)
+            web_alert_dict_multi.update(web_alert_dict)
+            web_field_dict_multi.update(web_field_dict)
+
+        if verbose_level > 2:
+            print("Dataset-(Multi-html): ", dataset_multi)
+            print("db_fields_multi: ", db_fields_multi)
+            print("web_alert_dict_multi: ", web_alert_dict_multi)
+            print("web_field_dict_multi: ", web_field_dict_multi)
+            print("file_name: ", file_name)
+
+        self.write_html(html_multi_file, path, dataset_multi, verbose_level, db_fields_multi, web_alert_dict_multi, web_field_dict_multi)
 
     @staticmethod
-    def write_html(file_name, dataset, verbose_level, db_fields, web_alert_dict, web_field_dict):
+    def write_html(file_name, path, dataset, db_fields, web_alert_dict, web_field_dict, verbose_level):
 
         if verbose_level > 0:
             print("create html: ", file_name)
@@ -32,7 +77,7 @@ class HtmlCreator(Influx):
             print("web_field_dict: ", web_field_dict)
 
         try:
-            with open(file_name, "w") as f:
+            with open(os.path.join(path, file_name), "w") as f:
                 f.write("<!DOCTYPE html>" + "\n")
                 f.write("<html>" + "\n")
                 f.write(" <head>" + "\n")
