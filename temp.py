@@ -11,8 +11,6 @@ import argparse  # analyze command line arguments
 
 import TempSet
 
-# from temp_html import *
-
 config_file = 'temp-config.txt'
 html_single_file = 'www/temp-single.html'
 html_multi_file = 'www/temp-multi.html'
@@ -199,7 +197,7 @@ if args.html_single:
                         conf.web_alert_dict, conf.web_field_dict, verbose_level)
     read_sens = 0
 
-if args.html_multi:  # todo function not work
+if args.html_multi:
     config_files = args.html_multi
     multi_conf = []
 
@@ -209,7 +207,7 @@ if args.html_multi:  # todo function not work
 
         conf.read_config(1, file, path, db_all_remote, temp_all_remote, verbose_level)
         multi = TempSet.ConfigMulti(conf.db_all, conf.db_all_remote, conf.db_fields,
-                                    conf.db_fields_str,conf.web_alert_dict, conf.web_alert_dict)
+                                    conf.db_fields_str, conf.web_alert_dict, conf.web_field_dict)
 
         multi_conf.append(multi)
 
