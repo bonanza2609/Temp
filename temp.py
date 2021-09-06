@@ -123,7 +123,7 @@ if args.setup:
 # -------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------
 
-def version_main(v_main):  # todo check if possible tu use with class's
+def version_main(v_main):
     print("version_main: ", v_main)
     TempSet.Config.version()
     TempSet.ConfigMulti.version()
