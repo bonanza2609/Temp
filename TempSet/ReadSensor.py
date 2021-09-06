@@ -2,8 +2,14 @@ from .SensorGateway import SensorGateway
 import sys
 import time
 
+version = 2.0
+
 
 class ReadSensor(SensorGateway):
+
+    @staticmethod
+    def version():
+        print(str("version_read_sensor:" + str(version)))
 
     def __init__(self):
         super().__init__()

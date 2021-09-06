@@ -52,7 +52,7 @@ read_sens = 1       # default: [1] read sensors
 database_level = 1  # default: [1] write to database
 verbose_level = 1   # default: [1] show status messages
 
-version = '1.7'
+version = '2.0'
 
 
 # -------------------------------------------------------------------------------------------
@@ -125,10 +125,12 @@ if args.setup:
 
 def version_main(v_main):  # todo check if possible tu use with class's
     print("version_main: ", v_main)
-    # print(version_db())
-    # print(version_html())
-
-    sys.exit(0)
+    TempSet.Config.version()
+    TempSet.ConfigMulti.version()
+    TempSet.SensorGateway.version()
+    TempSet.ReadSensor.version()
+    TempSet.Influx.version()
+    TempSet.HtmlCreator.version()
 
 
 # -------------------------------------------------------------------------------------------

@@ -2,7 +2,14 @@ from pyownet import protocol
 import sys
 
 
+version = 1.0
+
+
 class SensorGateway:
+
+    @staticmethod
+    def version():
+        print(str("version_sensor_gateway:" + str(version)))
 
     def __init__(self):
         self.sensor_list = None

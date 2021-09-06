@@ -3,7 +3,14 @@ import os
 import sys
 
 
+version = 2.0
+
+
 class HtmlCreator(Influx):
+
+    @staticmethod
+    def version():
+        print(str("version_html:" + str(version)))
 
     def __init__(self):
         super().__init__()

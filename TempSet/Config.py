@@ -1,8 +1,15 @@
 import time
 import os
 
+version_config = 1.0
+version_config_multi = 1.0
+
 
 class Config:
+
+    @staticmethod
+    def version():
+        print(str("version_config:" + str(version_config)))
 
     def __init__(self):
         self.input_ok = True
@@ -349,6 +356,10 @@ class Config:
 
 
 class ConfigMulti:
+
+    @staticmethod
+    def version():
+        print(str("version_config_multi:" + str(version_config_multi)))
 
     def __init__(self, db_all, db_all_remote, db_fields, db_fields_str, web_alert_dict, web_field_dict):
         self.db_all = db_all

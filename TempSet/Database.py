@@ -1,8 +1,15 @@
 from influxdb import InfluxDBClient
 import sys
 
+version = 2.0
+
 
 class Influx:
+
+    @staticmethod
+    def version():
+        print(str("version_Influx:" + str(version)))
+
     def __init__(self):
         self.db = None
         self.db_val_x = None
