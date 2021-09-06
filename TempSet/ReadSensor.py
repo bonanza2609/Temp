@@ -66,7 +66,6 @@ class ReadSensor(SensorGateway):
 
         self.sensor_id = sensor_slave  # id of 1-wire sensor
         self.sensor_type = self.ow_proxy.read(sensor_slave + "type").decode()  # type of 1-wire sensor
-        # self.sensor_type = self.sensor_type.decode()  # decode bytes of type # todo check
 
         try:
 
@@ -103,40 +102,37 @@ class ReadSensor(SensorGateway):
         for w1_slave in w1_slaves:
             time.sleep(0.2)
             self.read_sensor(w1_slave, sensor_slaves_dict_offset, temp_all,  verbose_level)
-            value = self.value
+
             # check for faulty data
-            # todo check
-            if value <= dead_lo or value >= dead_hi:
-                if verbose_level > 1:
-                    print("Panic", value)
-                time.sleep(0.5)
-                self.read_sensor(w1_slave, sensor_slaves_dict_offset, temp_all, verbose_level)
-                if verbose_level > 1:
-                    print("2nd try", value)
-
-            if value <= dead_lo or value >= dead_hi:  # check for faulty data
-                if verbose_level > 0:
-                    print("Panic", value)
-                time.sleep(1.5)
-                self.read_sensor(w1_slave, sensor_slaves_dict_offset, temp_all, verbose_level)
-                if verbose_level > 0:
-                    print("3rd try", value)
-
-            if value < error_low or value > error_high:
-                value = None  # ???
+            r = 1
+            r_max = 3  # max retry for faulty data
+            t = 0.5  # time delay between retry add per round
+            while r <= r_max:
+                if dead_lo <= self.value <= dead_hi:
+                    break
+                else:
+                    if verbose_level > 1:
+                        print("Panic", self.value)
+                        print(r, ". retry")
+                    time.sleep(t)
+                    self.read_sensor(w1_slave, sensor_slaves_dict_offset, temp_all, verbose_level)
+                    r += 1
+                    t += 0.5
 
             if verbose_level > 0:
                 if self.sensor_type == 'DS2438':
                     # DS2438
-                    print(str(self.sensor_id) + ' | {:5.2f} {}'.format(value, '%rH'))  # Print value
+                    print(str(self.sensor_id) + ' | {:5.2f} {}'.format(self.value, '%rH'))  # Print value
                 elif self.sensor_type == "DS18S20" or self.sensor_type == "DS18B20":
-                    print(str(self.sensor_id) + ' | {:5.3f} {}'.format(value, '°C'))  # Print value
+                    print(str(self.sensor_id) + ' | {:5.3f} {}'.format(self.value, '°C'))  # Print value
                 else:
                     print("unknown Type of sensor:", self.sensor_type)
-            self.sensor_count += 1
 
             if read_level:
-                self.sensor_data.append((self.sensor_id, value))  # store value in database
+                if error_low <= self.value <= error_high:
+                    self.sensor_data.append((self.sensor_id, self.value))  # store value in database
+                    self.sensor_count += 1
+
         if verbose_level > 2:
             print("sensors detected: ", self.sensor_count)
             print("sensor_data: ", self.sensor_data)
