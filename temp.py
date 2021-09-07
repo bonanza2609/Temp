@@ -46,11 +46,12 @@ temp_r_port = "4304"                # port
 temp_all = [temp_host, temp_port]
 temp_all_remote = [temp_r_host, temp_r_port]
 
-remote_set = 0      # default: [0] use Normal Database and Temp Server
-setup_level = 0     # default: [0] do not read config file
-read_sens = 1       # default: [1] read sensors
-database_level = 1  # default: [1] write to database
-verbose_level = 1   # default: [1] show status messages
+remote_set = 0          # default: [0] use Normal Database and Temp Server
+setup_level = 0         # default: [0] do not read config file
+read_sens = 1           # default: [1] read sensors
+database_level = 1      # default: [1] write to database
+verbose_level = 1       # default: [1] show status messages
+db_time_max = 104    # default: [104] max time range in week for influx database read
 
 version = '2.0'
 
@@ -169,7 +170,7 @@ if args.setup:
     read_sens = 0
 
 conf = TempSet.Config()
-conf.read_config(0, config_file, path, db_all_remote, temp_all_remote, verbose_level)
+conf.read_config(1, config_file, path, db_all_remote, temp_all_remote, verbose_level)
 db = TempSet.Influx()
 h = TempSet.HtmlCreator()
 
@@ -183,7 +184,7 @@ if args.create:
     read_sens = 0
 
 if args.read:
-    db.read_records(args.read, conf.db_all, conf.db_fields_str, verbose_level, conf.db_fields)
+    db.read_records(args.read, conf.db_all, conf.db_fields, conf.db_fields_str, db_time_max, verbose_level)
     read_sens = 0
 
 if args.kill:
@@ -196,7 +197,7 @@ if args.xxx:
 
 if args.html_single:
     h.write_html_single(conf.html_single_file, path, conf.db_all, conf.db_fields, conf.db_fields_str,
-                        conf.web_alert_dict, conf.web_field_dict, verbose_level)
+                        db_time_max, conf.web_alert_dict, conf.web_field_dict, verbose_level)
     read_sens = 0
 
 if args.html_multi:
@@ -213,7 +214,7 @@ if args.html_multi:
 
         multi_conf.append(multi)
 
-    h.write_html_multi(html_multi_file, path, config_files, multi_conf, remote_set, verbose_level)
+    h.write_html_multi(html_multi_file, path, config_files, multi_conf, db_time_max, remote_set, verbose_level)
     read_sens = 0
 
 if read_sens:

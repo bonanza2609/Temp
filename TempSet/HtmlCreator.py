@@ -16,17 +16,17 @@ class HtmlCreator(Influx):
         super().__init__()
 
     def write_html_single(self, file_name, path, db_all, db_fields, db_fields_str,
-                          web_alert_dict, web_field_dict, verbose_level):
+                          db_time_max, web_alert_dict, web_field_dict, verbose_level):
 
         if verbose_level > 1:
             print("read database")
-        self.read_records(1, db_all, db_fields_str, verbose_level, db_fields)
+        self.read_records(1, db_all, db_fields, db_fields_str, db_time_max, verbose_level)
         if verbose_level > 3:
             print("Dataset-(html): ", self.dataset)
 
         self.write_html(file_name, path, self.dataset, db_fields, web_alert_dict, web_field_dict, verbose_level)
 
-    def write_html_multi(self, html_multi_file, path, config_files, multi_conf, remote_set, verbose_level):
+    def write_html_multi(self, html_multi_file, path, config_files, multi_conf, db_time_max, remote_set, verbose_level):
         if verbose_level > 1:
             print("read database's")
 
@@ -53,7 +53,7 @@ class HtmlCreator(Influx):
                 print("web_field_dict: ", web_field_dict)
             if remote_set == 1:
                 db_all = db_all_remote
-            self.read_records(1, db_all, db_fields_str, verbose_level, db_fields)
+            self.read_records(1, db_all, db_fields, db_fields_str, db_time_max, verbose_level)
             if verbose_level > 3:
                 print("Dataset-(html): ", self.dataset)
             dataset_multi.update(self.dataset)

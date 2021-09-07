@@ -145,7 +145,7 @@ class Influx:
 
         self.db_interaction(db_all, json_body, 1, verbose_level)
 
-    def read_records(self, db_lines, db_all, db_fields_str, verbose_level, db_fields):
+    def read_records(self, db_lines, db_all, db_fields, db_fields_str, db_time_max, verbose_level):
         loop = True
 
         db_table = db_all[4]
@@ -160,7 +160,6 @@ class Influx:
         db_time_value = 10
         db_time_suffix = 'm'
         db_t_count = 0
-        db_time_max = 104
 
         while loop:
             db_time = str(db_time_value) + db_time_suffix
