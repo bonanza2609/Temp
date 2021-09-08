@@ -91,7 +91,10 @@ class HtmlCreator(Influx):
                 f.write(" <head>" + "\n")
                 f.write("  <meta charset='UTF-8'>" + "\n")
                 f.write("  <title>Temperatur</title>" + "\n")
-                f.write("  <link rel='stylesheet' href='./temp-style.css' />" + "\n")
+                f.write("  <link rel='stylesheet' href='temp-style.css'>" + "\n")
+                f.write("  <!link rel='stylesheet' href='css/normalize.css'>" + "\n")
+                f.write("  <!link rel='stylesheet' href='css/skeleton.css'>" + "\n")
+                f.write("  <!link rel='icon' type='image/png' href='images/favicon.png'>" + "\n")
                 f.write(" </head>" + "\n")
                 f.write(" <body>" + "\n")
                 date_time_string = dataset.get("time")
@@ -147,8 +150,12 @@ class HtmlCreator(Influx):
 
                     f.write("   <div class='value'>\n"
                             "    <div class='" + field_id + "'>\n"
-                            "     <div class='tag'>" + str(web_tag) + "</div>\n"
-                            "     <div class='field'>" + str(field_list) + "  &deg;C</div>\n"
+                            "     <div class='tag'>\n"
+                            "      <p>" + str(web_tag) + "</p>\n"
+                            "     </div>\n"
+                            "     <div class='field'>\n"
+                            "      <p>" + str(field_list) + "  &deg;C</p>\n"
+                            "     </div>\n"
                             "    </div>\n"
                             "   </div>\n")
 

@@ -11,12 +11,20 @@ body {
 }
 
 .tag {
-    display: grid; margin-top: 0.5em
+
 }
 
 .field {
-    display: grid; margin-bottom: 0.5em; font-size: 30px
+      font-size: 30px
 }
+
+/*.tag {*/
+/*    display: grid; font-size: 23px*/
+/*}*/
+
+/*.field {*/
+/*    display: grid; font-size: 30px*/
+/*}*/
 
 .box { 
     border: 5px solid darkgreen; background-color: lightgreen; color:black 
