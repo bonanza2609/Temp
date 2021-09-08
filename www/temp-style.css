@@ -3,19 +3,19 @@ body {
 }
 
 .values {
-    position: relative; margin-left: 3%; margin-top: 1%; font-size: 27px; font-weight: 900
+    position: relative; margin-left: 2%; margin-top: 1%; font-size: 27px; font-weight: 900 
 }
 
-.value {
-    float: left; width: 31%; margin-right: 0.5%; margin-bottom: 1%; margin-left: 0.5%;
+.value { 
+    float: left; width: 31%; margin-right: 0.5%; margin-bottom: 1%; margin-left: 0.5%; 
 }
 
-.tag {
+.tag { 
     display: grid; margin-top: 0.5em
 }
 
-.field {
-    display: grid; margin-bottom: 0.5em; font-size: 30px
+.field { 
+    display: grid; margin-bottom: 0.5em; font-size: 32px 
 }
 
 .box { 
