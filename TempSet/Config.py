@@ -9,7 +9,7 @@ class Config:
 
     @staticmethod
     def version():
-        print(str("version_config:" + str(version_config)))
+        print(str("version_config: " + str(version_config)))
 
     def __init__(self):
         self.input_ok = True
@@ -359,7 +359,7 @@ class ConfigMulti:
 
     @staticmethod
     def version():
-        print(str("version_config_multi:" + str(version_config_multi)))
+        print(str("version_config_multi: " + str(version_config_multi)))
 
     def __init__(self, db_all, db_all_remote, db_fields, db_fields_str, web_alert_dict, web_field_dict):
         self.db_all = db_all

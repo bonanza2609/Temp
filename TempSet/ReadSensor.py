@@ -9,7 +9,7 @@ class ReadSensor(SensorGateway):
 
     @staticmethod
     def version():
-        print(str("version_read_sensor:" + str(version)))
+        print(str("version_read_sensor: " + str(version)))
 
     def __init__(self):
         super().__init__()

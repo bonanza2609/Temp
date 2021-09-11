@@ -9,7 +9,7 @@ class SensorGateway:
 
     @staticmethod
     def version():
-        print(str("version_sensor_gateway:" + str(version)))
+        print(str("version_sensor_gateway: " + str(version)))
 
     def __init__(self):
         self.sensor_list = None

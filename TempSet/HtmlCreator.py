@@ -10,7 +10,7 @@ class HtmlCreator(Influx):
 
     @staticmethod
     def version():
-        print(str("version_html:" + str(version)))
+        print(str("version_html: " + str(version)))
 
     def __init__(self):
         super().__init__()

@@ -8,7 +8,7 @@ class Influx:
 
     @staticmethod
     def version():
-        print(str("version_Influx:" + str(version)))
+        print(str("version_Influx: " + str(version)))
 
     def __init__(self):
         self.db = None
