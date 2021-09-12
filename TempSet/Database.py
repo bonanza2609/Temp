@@ -233,7 +233,7 @@ class Influx:
 
             for x in range(0, count):
                 output = []
-                self.dataset = list(list(self.db_val_x)[0])[x]
+                self.dataset = list(list(self.db_val_x)[0][::-1])[x]
                 if verbose_level > 1:
                     print(x)
                     print(self.dataset)
