@@ -109,7 +109,7 @@ class HtmlCreator(Influx):
                         print("field_list", field_list)
                         print("field_list(type", type(field_list))
 
-                    if field_list:
+                    if field_list == 0.0 or field_list:
                         if type(web_alert_temp) == tuple:  # (value 0 / value 1)
                             web_alert_temp_high = web_alert_temp[0]
                             web_alert_temp_low = web_alert_temp[1]
