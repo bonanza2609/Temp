@@ -43,10 +43,10 @@ class Config:
             var = input("Influxdb-Server password     (default [" + db_all[3] + "]):")
             if len(var) != 0:
                 db_all[3] = var
-            var = input("Influxdb-Server database     (default [" + db_all[4] + "]):")
+            var = input("Influxdb-Server database     (default [" + db_all[5] + "]):")
             if len(var) != 0:
                 db_all[4] = var
-            var = input("Influxdb-Server table        (default [" + db_all[5] + "]):")
+            var = input("Influxdb-Server table        (default [" + db_all[4] + "]):")
             if len(var) != 0:
                 db_all[5] = var
             var = input("OW-Server address       (default [" + temp_all[0] + "]):")
@@ -75,8 +75,8 @@ class Config:
             print('port       :', db_all[1])
             print('user       :', db_all[2])
             print('passwd     :', db_all[3])
-            print('database   :', db_all[4])
-            print('table      :', db_all[5])
+            print('database   :', db_all[5])
+            print('table      :', db_all[4])
             print('host       :', temp_all[0])
             print('port       :', temp_all[1])
 
