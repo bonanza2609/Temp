@@ -1,7 +1,7 @@
 import time
 import os
 
-version_config = 1.0
+version_config = 1.5
 version_config_multi = 1.0
 
 
@@ -353,6 +353,65 @@ class Config:
         except IOError:
             print("----------------------", now)
             print("Cannot find file: " + os.path.join(path, config_file))
+
+    def expand_config(self, db_ex_host, db_ex_port, sens_host, sens_port, verbose_level):
+
+        db_host = self.db_all[0]
+        db_port = self.db_all[1]
+        db_user = self.db_all[2]
+        db_password = self.db_all[3]
+        db_table = self.db_all[4]
+        db_database = self.db_all[5]
+
+        db_r_host = self.db_all_remote[0]
+        db_r_port = self.db_all_remote[1]
+        db_r_user = self.db_all_remote[2]
+        db_r_password = self.db_all_remote[3]
+        db_r_table = self.db_all_remote[4]
+        db_r_database = self.db_all_remote[5]
+
+        temp_host = self.temp_all[0]
+        temp_port = self.temp_all[1]
+
+        temp_r_host = self.temp_all_remote[0]
+        temp_r_port = self.temp_all_remote[1]
+
+        if verbose_level > 1:
+            print("Database  (local) : ", self.db_all)
+            print("Database  (remote): ", self.db_all_remote)
+            print("OW-Server (local) : ", self.temp_all)
+            print("OW-Server (remote): ", self.temp_all_remote)
+            print("Different DB Host    : ", db_ex_host)
+            print("Different DB Port    : ", db_ex_port)
+            print("Different Sensor Host: ", sens_host)
+            print("Different Sensor Port: ", sens_port)
+
+        if db_ex_host or db_ex_port:
+            if db_ex_host:
+                db_host = db_r_host = db_ex_host
+            if db_ex_port:
+                db_port = db_r_port = db_ex_port
+
+            self.db_all = [db_host, db_port, db_user, db_password, db_table, db_database]
+            self.db_all_remote = [db_r_host, db_r_port, db_r_user, db_r_password, db_r_table, db_r_database]
+
+        if sens_host or sens_port:
+            if sens_host:
+                temp_host = temp_r_host = sens_host
+            if sens_port:
+                temp_port = temp_r_port = sens_port
+
+            self.temp_all = [temp_host, temp_port]
+            self.temp_all_remote = [temp_r_host, temp_r_port]
+
+        if verbose_level > 0:
+            print("Expand Config")
+
+            if verbose_level > 1:
+                print("Database  (local) : ", self.db_all)
+                print("Database  (remote): ", self.db_all_remote)
+                print("OW-Server (local) : ", self.temp_all)
+                print("OW-Server (remote): ", self.temp_all_remote)
 
 
 class ConfigMulti:

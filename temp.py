@@ -63,8 +63,6 @@ parser = argparse.ArgumentParser(description="Read 1-wire sensors and write to d
 
 # argument with argument from type int
 
-parser.add_argument("-r", "--read", help="get the [READ] last entries from the database", type=int)
-
 group1 = parser.add_mutually_exclusive_group()
 group1.add_argument("-v", "--verbose", default=False,
                     dest='verbose', help="increase output verbosity", type=int)
@@ -74,6 +72,8 @@ group1.add_argument("-q", "--quiet", action='store_const', dest='quiet',
 
 group1.add_argument("-d", "--debug", action='store_const', dest='debug',
                     const='value-to-store', help="show debug messages")
+
+parser.add_argument("-r", "--read", help="get the [READ] last entries from the database", type=int)
 
 parser.add_argument("-n", "--nodb", action='store_const', dest='nodb',
                     const='value-to-store', help="execute read but do not write into database")
@@ -107,6 +107,14 @@ parser.add_argument('--version', action='store_const', dest='version',
 
 parser.add_argument('--conf', dest='conf', help="set config file", type=str)
 
+parser.add_argument('--dbhost', dest='dbhost', help="set different DB Host", type=str)
+
+parser.add_argument('--dbport', dest='dbport', help="set different DB Port", type=str)
+
+parser.add_argument('--senshost', dest='senshost', help="set different Sensor Host ", type=str)
+
+parser.add_argument('--sensport', dest='sensport', help="set different Sensor Port", type=str)
+
 args = parser.parse_args()
 
 if args.verbose:
@@ -123,6 +131,7 @@ if args.setup:
 
 # -------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------
+
 
 def version_main(v_main):
     print("version_main: ", v_main)
@@ -173,6 +182,9 @@ conf = TempSet.Config()
 conf.read_config(1, config_file, path, db_all_remote, temp_all_remote, verbose_level)
 db = TempSet.Influx()
 h = TempSet.HtmlCreator()
+
+if args.dbhost or args.dbport or args.senshost or args.sensport:
+    conf.expand_config(args.dbhost, args.dbport, args.senshost, args.sensport, verbose_level)
 
 if args.remote:
     conf.db_all = conf.db_all_remote
