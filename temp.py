@@ -53,7 +53,7 @@ database_level = 1      # default: [1] write to database
 verbose_level = 1       # default: [1] show status messages
 db_time_max = 104    # default: [104] max time range in week for influx database read
 
-version = '2.0'
+version = '2.5'
 
 
 # -------------------------------------------------------------------------------------------
