@@ -1,0 +1,2 @@
+influxdb~=5.3.1
+pyownet~=0.10.0.post1
