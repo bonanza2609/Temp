@@ -53,7 +53,7 @@ database_level = 1      # default: [1] write to database
 verbose_level = 1       # default: [1] show status messages
 db_time_max = 104    # default: [104] max time range in week for influx database read
 
-version = '2.5'
+version = '2.6'
 
 
 # -------------------------------------------------------------------------------------------
@@ -232,8 +232,8 @@ if args.html_multi:
 if read_sens:
     if verbose_level > 0:
         print(sys.argv[0], " - reading sensors ...  ", now)
-    read = TempSet.ReadSensor()
-    read.read_sensors(1, conf.temp_all, conf.sensor_dict_offset, dead_lo, dead_hi, error_low, error_high, verbose_level)
+    read = TempSet.ReadSensor(dead_lo, dead_hi, error_low, error_high)
+    read.read_sensors(1, conf.temp_all, conf.sensor_dict_offset, verbose_level=verbose_level)
     if database_level:
         db.write_database(read.sensor_count, read.sensor_data, conf.sensor_dict, conf.db_all, verbose_level)
     else:
