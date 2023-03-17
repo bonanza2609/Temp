@@ -1,3 +1,9 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Read 1-Wire sensors and write into database
+#
+
 from .SensorGateway import SensorGateway
 import sys
 import time
