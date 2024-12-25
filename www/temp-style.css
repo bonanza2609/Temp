@@ -1,39 +1,69 @@
-body { 
-    background-color: dimgrey; text-align: center; font-family: Verdana, Geneva, Tahoma, sans-serif; color: white 
+body {
+    background-color: dimgrey;
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: white
 }
 
 .values {
-    position: relative; margin-left: 2%; margin-top: 1%; font-size: 27px; font-weight: 900 
+    position: relative;
+    margin-left: 2%;
+    margin-top: 1%;
+    font-size: 27px;
+    font-weight: 900
 }
 
-.value { 
-    float: left; width: 32%; margin-right: 0.5%; margin-bottom: 1%; margin-left: 0.5%; 
+.value {
+    float: left;
+    width: 32%;
+    margin-right: 0.5%;
+    margin-bottom: 1%;
+    margin-left: 0.5%;
 }
 
-.tag { 
-    display: grid; margin-top: 0.5em
+.tag {
+    display: grid;
+    margin-top: 0.5em
 }
 
-.field { 
-    display: grid; margin-bottom: 0.12em; font-size: 32px 
+.field {
+    display: grid;
+    margin-bottom: 0.12em;
+    font-size: 32px
 }
 
-.box { 
-    border: 5px solid darkgreen; background-color: lightgreen; color:black 
+.box {
+    border: 5px solid darkgreen;
+    background-color: lightgreen;
+    color: black
 }
 
-.box-orange { 
-    border: 5px solid darkorange; background-color: peachpuff; color: black 
+.box-orange {
+    border: 5px solid darkorange;
+    background-color: peachpuff;
+    color: black
 }
 
-.box-red { 
-    border: 5px solid darkred; background-color: lightpink; color: black 
+.box-red {
+    border: 5px solid darkred;
+    background-color: lightpink;
+    color: black
 }
 
-.box-blue { 
-    border: 5px solid darkblue; background-color: lightblue; color: black 
+.box-blue {
+    border: 5px solid darkblue;
+    background-color: lightblue;
+    color: black
 }
 
-.box-none { 
-    border: 5px solid darkgray; background-color: lightgray; color: black 
+.box-purple {
+    border: 5px solid darkviolet;
+    background-color: #e1bee7;
+    color: black
+}
+
+.box-none {
+    border: 5px solid darkgray;
+    background-color: lightgray;
+    color: black
 }
