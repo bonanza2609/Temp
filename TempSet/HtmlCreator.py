@@ -74,6 +74,8 @@ class HtmlCreator(Influx):
     @staticmethod
     def write_html(file_name, path, dataset, db_fields, web_alert_dict, web_field_dict, verbose_level):
 
+        box_index = ["box", "box-orange", "box-red", "box-blue", "box-purple"]
+
         if verbose_level > 0:
             print("create html: ", file_name)
 
@@ -110,30 +112,20 @@ class HtmlCreator(Influx):
                         print("field_list(type", type(field_list))
 
                     if field_list == 0.0 or field_list:
-                        if type(web_alert_temp) == tuple:  # (value 0 / value 1)
-                            web_alert_temp_high = web_alert_temp[0]
-                            web_alert_temp_low = web_alert_temp[1]
-                        else:
-                            web_alert_temp_high = web_alert_temp
-                            web_alert_temp_low = -99999
-                        if verbose_level > 2:
-                            print("field_list(in-temp)", field_list)
-                        value1 = float(field_list) - float(web_alert_temp_high)
-                        value2 = float(field_list) - float(web_alert_temp_high) + 1
-                        value3 = float(field_list) - float(web_alert_temp_low)
-                        if verbose_level > 2:
-                            print("value1: ", value1)
-                            print("value2: ", value2)
-                            print("value3: ", value3)
-                        if value1 >= 0:
-                            field_id = "box-red"
-                        elif value2 >= 0:
-                            field_id = "box-orange"
-                        elif value3 <= 0:
-                            field_id = "box-blue"
-                        else:
-                            field_id = "box"
+                        box_id = 0
+                        for i in range(len(web_alert_temp)):
+                            alert_value = float(field_list) - float(web_alert_temp[i])
 
+                            if i == 0:
+                                if alert_value >= -1:
+                                    box_id = 1
+                                if alert_value >= 0:
+                                    box_id = i + 2
+                            elif i == 1 or 2:
+                                if alert_value <= 0:
+                                    box_id = i + 2
+
+                        field_id = box_index[box_id]
                         field_list = round(field_list, 1)
                     else:
                         field_id = "box-none"

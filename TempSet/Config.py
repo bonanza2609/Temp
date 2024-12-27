@@ -1,7 +1,7 @@
 import time
 import os
 
-version_config = 1.5
+version_config = 2.0
 version_config_multi = 1.0
 
 
@@ -144,7 +144,7 @@ class Config:
             file_config.write("web_field tbd-8 tad-8\n")
             file_config.write("# WEB Alert Temp \n")
             file_config.write("# max temp per Sensor Syntax: \n")
-            file_config.write("# web_alert [dbfield] [Temp-high] (Optional:[Temp-low])\n")
+            file_config.write("# web_alert [dbfield] [Temp-high] (Optional:[Temp-low] [Temp-extra-low])\n")
             file_config.write("# -----------------------------------------------------------\n")
             file_config.write(" web_alert tbd-1 0\n")
             file_config.write(" web_alert tbd-2 0\n")
@@ -238,7 +238,7 @@ class Config:
                 line = settings[x]
                 if verbose_level > 3:
                     print(x, ": ", line)
-                item1 = line.split()
+                item1: list[str] = line.split()
                 if len(item1) > 1:  # need 4 items for sensor: tag, value1, value2, value3
                     if verbose_level > 2:
                         print(item1[0], item1[1], len(item1))
@@ -282,19 +282,20 @@ class Config:
                         if item1[0] == "web_field":
                             web_field_dict[item1[1]] = item1[2]
                         if item1[0] == "web_alert":
-                            if len(item1) > 3:
-                                web_alert_dict[item1[1]] = item1[2], item1[3]
-                            else:
-                                web_alert_dict[item1[1]] = item1[2]
-                    if len(item1) > 3:
-                        if item1[0] == "Sensor":
-                            if verbose_level > 2:
-                                print("Sensor", item1[1], "Offset:", item1[2], "Field:", item1[3])
-                            sensor_list.append(item1[1])
-                            sensor_locations.append(item1[3])
-                            sensor_dict[item1[1]] = item1[3]
-                            sensor_offset.append(item1[2])
-                            sensor_dict_offset[item1[1]] = item1[2]
+                            items = []
+                            for i in range(2, len(item1)):
+                               items.append(item1[i])
+                            web_alert_dict[item1[1]] = items
+
+                        if len(item1) > 3:
+                            if item1[0] == "Sensor":
+                                if verbose_level > 2:
+                                    print("Sensor", item1[1], "Offset:", item1[2], "Field:", item1[3])
+                                sensor_list.append(item1[1])
+                                sensor_locations.append(item1[3])
+                                sensor_dict[item1[1]] = item1[3]
+                                sensor_offset.append(item1[2])
+                                sensor_dict_offset[item1[1]] = item1[2]
 
             for x in range(0, len(db_fields)):
                 if verbose_level > 2:
